@@ -1,0 +1,287 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Activity Logs - Admin Dashboard{% endblock %}
+
+{% block page_styles %}
+<style>
+/* Activity Logs Page Specific Styles */
+.filters-section {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e9ecef;
+}
+
+.filters-section h3 {
+    color: #8B0000;
+    font-size: 1.1rem;
+    margin-bottom: 0.75rem;
+}
+
+/* Consistent filter UI */
+.filters-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: .75rem;
+}
+.filters-title {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #8B0000;
+}
+.btn-apply { background: #8B0000; border: none; }
+.btn-apply:hover { background: #a00000; }
+
+.action-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    display: inline-block;
+    text-align: center;
+    min-width: 80px;
+}
+
+.action-approved {
+    background: #198754;
+    color: white;
+}
+
+.action-rejected {
+    background: #dc3545;
+    color: white;
+}
+
+.action-edited {
+    background: #0d6efd;
+    color: white;
+}
+
+.action-submitted {
+    background: #28a745;
+    color: white;
+}
+
+.action-archived {
+    background: #6c757d;
+    color: white;
+}
+
+.action-deleted {
+    background: #dc3545;
+    color: white;
+}
+
+.action-create {
+    background: #198754;
+    color: white;
+}
+
+.action-update {
+    background: #0d6efd;
+    color: white;
+}
+
+.action-delete {
+    background: #dc3545;
+    color: white;
+}
+
+.action-login {
+    background: #6c757d;
+    color: white;
+}
+
+/* export button removed */
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.user-role {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #8B0000;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.user-name {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #333;
+}
+
+@media (max-width: 768px) {
+    .page-header h1 {
+        font-size: 2rem;
+    }
+    
+    .logs-table {
+        font-size: 0.875rem;
+    }
+    
+    .logs-table th, .logs-table td {
+        padding: 0.75rem 0.5rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <h1><i class="bi bi-clock-history me-2"></i>Activity Logs</h1>
+    <p>View and monitor system activity</p>
+</div>
+
+<!-- Filters Section -->
+<div class="filters-section">
+    <div class="filters-header">
+        <h3 class="filters-title"><i class="bi bi-funnel-fill"></i> Filter Logs</h3>
+    </div>
+    <form method="GET" action="{{ url_for('admin_activity_logs') }}" class="row g-3">
+        <div class="col-md-3">
+            <label for="user_filter" class="form-label">User</label>
+            <select class="form-select" id="user_filter" name="user">
+                <option value="">All Users</option>
+                {% if users %}
+                    {% for u in users %}
+                    <option value="{{ u.user_id }}" {% if user_filter == u.user_id|string %}selected{% endif %}>{{ u.username }}</option>
+                    {% endfor %}
+                {% endif %}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label for="action_filter" class="form-label">Action</label>
+            <select class="form-select" id="action_filter" name="action">
+                <option value="">All Actions</option>
+                <option value="approved" {% if action_filter == 'approved' %}selected{% endif %}>Approved</option>
+                <option value="rejected" {% if action_filter == 'rejected' %}selected{% endif %}>Rejected</option>
+                <option value="edited" {% if action_filter == 'edited' %}selected{% endif %}>Edited</option>
+                <option value="submitted" {% if action_filter == 'submitted' %}selected{% endif %}>Submitted</option>
+                <option value="archived" {% if action_filter == 'archived' %}selected{% endif %}>Archived</option>
+                <option value="deleted" {% if action_filter == 'deleted' %}selected{% endif %}>Deleted</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label for="date_from" class="form-label">From Date</label>
+            <input type="date" class="form-control" id="date_from" name="date_from" value="{{ date_from or '' }}">
+        </div>
+        <div class="col-md-3">
+            <label for="date_to" class="form-label">To Date</label>
+            <input type="date" class="form-control" id="date_to" name="date_to" value="{{ date_to or '' }}">
+        </div>
+        <div class="col-12">
+            <button type="submit" class="btn btn-primary btn-apply">
+                <i class="bi bi-funnel-fill me-2"></i>Apply Filters
+            </button>
+            <a href="{{ url_for('admin_activity_logs') }}" class="btn btn-secondary ms-2">
+                <i class="bi bi-x-circle me-2"></i>Clear Filters
+            </a>
+            
+        </div>
+    </form>
+</div>
+
+<!-- Results Summary -->
+{% if user_filter or action_filter or date_from or date_to %}
+<div class="alert alert-info mt-3">
+    <i class="bi bi-info-circle me-2"></i>
+    Showing {{ logs|length }} log{{ 's' if logs|length != 1 else '' }}
+    {% if user_filter %}for selected user{% endif %}
+    {% if action_filter %}with action "{{ action_filter|title }}"{% endif %}
+    {% if date_from or date_to %}from {{ date_from or 'beginning' }} to {{ date_to or 'now' }}{% endif %}
+</div>
+{% endif %}
+
+<!-- Logs Table -->
+<div class="table-container">
+    <table class="table table-hover mb-0">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Timestamp</th>
+                <th>User</th>
+                <th>Action</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if logs %}
+                {% for log in logs %}
+                <tr>
+                    <td>{{ log.activity_id }}</td>
+                    <td>{{ log.timestamp.strftime('%Y-%m-%d %H:%M:%S') if log.timestamp else '' }}</td>
+                    <td>
+                        {% if log.username %}
+                            <span class="user-info">
+                                <span class="user-role">{{ log.user_role|title }}:</span> 
+                                <span class="user-name">{{ log.username }}</span>
+                            </span>
+                        {% else %}
+                            <span class="text-muted">System</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span class="action-badge action-{{ log.activity_type }}">
+                            {{ log.activity_type|title }}
+                        </span>
+                    </td>
+                    <td>{{ log.description }}</td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="5" class="text-center py-5">
+                        <i class="bi bi-inbox display-4 text-muted"></i>
+                        <p class="text-muted mt-3">No activity logs found</p>
+                    </td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Pagination -->
+{% if pagination %}
+<div class="d-flex justify-content-center mt-4">
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+            {% if pagination.has_prev %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('admin_activity_logs', page=pagination.prev_num) }}">Previous</a>
+            </li>
+            {% endif %}
+            
+            {% for page_num in pagination.iter_pages() %}
+                {% if page_num %}
+                    <li class="page-item {% if page_num == pagination.page %}active{% endif %}">
+                        <a class="page-link" href="{{ url_for('admin_activity_logs', page=page_num) }}">{{ page_num }}</a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                {% endif %}
+            {% endfor %}
+            
+            {% if pagination.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('admin_activity_logs', page=pagination.next_num) }}">Next</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}{% endblock %}

@@ -1,0 +1,242 @@
+{% extends "students_base.html" %}
+
+{% block title %}Pending Verifications - Student Dashboard{% endblock %}
+
+{% block page_styles %}
+<style>
+/* Pending Verifications Page Specific Styles - Compact */
+.page-header {
+    background: #8B0000;
+    color: white;
+    padding: 1rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 8px rgba(139, 0, 0, 0.2);
+}
+
+.page-header h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.page-header p {
+    font-size: 0.9rem;
+    margin: 0;
+    opacity: 0.9;
+}
+
+.info-alert {
+    background: #d1ecf1;
+    border: 1px solid #bee5eb;
+    color: #0c5460;
+    padding: 0.75rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+}
+
+.pending-container {
+    background: white;
+    border-radius: 6px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.pending-table {
+    margin-bottom: 0;
+    font-size: 0.9rem;
+}
+
+.pending-table thead {
+    background: #8B0000;
+    color: white;
+}
+
+.pending-table th {
+    padding: 0.75rem 0.5rem;
+    text-align: left;
+    font-weight: 600;
+    border: none;
+    font-size: 0.85rem;
+}
+
+.pending-table td {
+    padding: 0.75rem 0.5rem;
+    vertical-align: middle;
+    border-bottom: 1px solid #dee2e6;
+    font-size: 0.85rem;
+}
+
+.pending-table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.status-badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+}
+
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+}
+
+.no-pending {
+    text-align: center;
+    padding: 2rem 1rem;
+}
+
+.no-pending i {
+    font-size: 2rem;
+    color: #dee2e6;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .page-header h1 {
+        font-size: 1.25rem;
+    }
+    
+    .page-header p {
+        font-size: 0.8rem;
+    }
+    
+    .info-alert {
+        padding: 0.5rem;
+        font-size: 0.8rem;
+    }
+    
+    .pending-table th,
+    .pending-table td {
+        padding: 0.5rem 0.25rem;
+    }
+    
+    .status-badge {
+        font-size: 0.7rem;
+        padding: 0.2rem 0.4rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-header h1 {
+        font-size: 1.1rem;
+    }
+    
+    .pending-table {
+        font-size: 0.8rem;
+    }
+    
+    .pending-table th,
+    .pending-table td {
+        padding: 0.4rem 0.2rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <h1><i class="bi bi-chat-dots-fill me-3"></i>Pending Verifications</h1>
+    <p>Track your rock samples awaiting verification</p>
+</div>
+
+<!-- Flash Messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                <i class="bi bi-{{ 'exclamation-triangle' if category == 'error' else 'check-circle' if category == 'success' else 'info-circle' }} me-2"></i>
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+<!-- Info Alert -->
+<div class="info-alert">
+    <i class="bi bi-info-circle-fill me-2"></i>
+    <strong>Note:</strong> Your submissions are being reviewed by faculty personnel. You'll be notified once they are verified or if changes are requested.
+</div>
+
+<!-- Pending Table -->
+<div class="pending-container">
+    <div class="table-responsive">
+        <table class="pending-table table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>Rock ID</th>
+                    <th>Type</th>
+                    <th>Location</th>
+                    <th>Submission Date</th>
+                    <th>Days Pending</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if pending %}
+                                {% for rock in pending %}
+                                <tr>
+                        <td>{{ rock.rock_id }}</td>
+                        <td>{{ rock.rock_type }}</td>
+                        <td>{{ rock.location_name }}</td>
+                        <td>{{ rock.created_at.strftime('%Y-%m-%d') if rock.created_at else '' }}</td>
+                        <td>
+                            {% if rock.days_pending is not none %}
+                                {{ rock.days_pending }} days
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="badge status-badge bg-warning text-dark">
+                                Pending
+                            </span>
+                        </td>
+                        <td>
+                            <a href="{{ url_for('student_rock_detail', rock_id=rock.sample_id) }}" class="btn btn-primary btn-sm me-1" title="View">
+                                <i class="bi bi-eye-fill"></i>
+                            </a>
+                            <button class="btn btn-success btn-sm me-1" data-rock-id="{{ rock.sample_id }}" onclick="editRock(this.dataset.rockId)" type="button" title="Edit">
+                                <i class="bi bi-pencil-fill"></i>
+                            </button>
+                            <form method="POST" action="{{ url_for('student_delete_rock', sample_id=rock.sample_id) }}" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this rock sample? This action cannot be undone.');">
+                                <button class="btn btn-danger btn-sm" type="submit" title="Delete">
+                                    <i class="bi bi-trash-fill"></i>
+                                </button>
+                            </form>
+                        </td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                        <td colspan="7" class="text-center py-3">
+                            <div class="no-pending">
+                                <i class="bi bi-inbox"></i>
+                                <h5 class="text-muted mt-2">No pending verifications</h5>
+                                <p class="text-muted">All your submissions have been verified!</p>
+                            </div>
+                        </td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function editRock(rockId) {
+    window.location.href = `/student/edit-rock/${rockId}`;
+}
+
+function deleteRock(rockId) {
+    // This function is no longer used since we're using direct form submission
+    // Keeping it for compatibility but the form handles the deletion directly
+}
+</script>
+{% endblock %}

@@ -1,0 +1,273 @@
+{% extends "personnel_base.html" %}
+
+{% block title %}Verified Rock Samples - Personnel Dashboard{% endblock %}
+
+{% block page_styles %}
+<style>
+/* Compact page header */
+.page-header {
+    background: #8B0000;
+    color: white;
+    padding: 1rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 8px rgba(139, 0, 0, 0.2);
+}
+
+.page-header h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.page-header p {
+    font-size: 0.9rem;
+    margin: 0;
+    opacity: 0.9;
+}
+
+/* Compact search filters */
+.search-filters {
+    background: white;
+    border-radius: 6px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.form-label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.form-control,
+.form-select {
+    font-size: 0.9rem;
+    padding: 0.5rem 0.75rem;
+}
+
+.btn-search {
+    background: #8B0000;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+.btn-search:hover {
+    background: #700000;
+    color: white;
+}
+
+/* Compact rocks list container */
+.rocks-list-container {
+    background: white;
+    border-radius: 6px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.rocks-table {
+    font-size: 0.9rem;
+}
+
+.rocks-table thead {
+    background: #8B0000;
+    color: white;
+}
+
+.rocks-table th {
+    padding: 0.75rem 0.5rem;
+    font-size: 0.85rem;
+    text-align: center;
+}
+
+.rocks-table td {
+    padding: 0.75rem 0.5rem;
+    font-size: 0.85rem;
+    text-align: center;
+}
+
+.status-badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+}
+
+.btn-view {
+    background: #0d6efd;
+    color: white;
+    border: none;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 0.8rem;
+}
+
+.btn-view:hover {
+    background: #0b5ed7;
+    color: white;
+}
+
+.no-rocks {
+    padding: 2rem 1rem;
+    text-align: center;
+}
+
+.no-rocks i {
+    font-size: 2rem;
+    color: #6c757d;
+}
+
+.no-rocks h5 {
+    color: #6c757d;
+    margin-top: 1rem;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .page-header h1 {
+        font-size: 1.25rem;
+    }
+    
+    .page-header p {
+        font-size: 0.8rem;
+    }
+    
+    .search-filters {
+        padding: 0.75rem;
+    }
+    
+    .form-control,
+    .form-select {
+        padding: 0.4rem 0.6rem;
+        font-size: 0.85rem;
+    }
+    
+    .btn-search {
+        padding: 0.4rem 0.75rem;
+        font-size: 0.85rem;
+    }
+    
+    .rocks-table th,
+    .rocks-table td {
+        padding: 0.5rem 0.25rem;
+    }
+    
+    .status-badge {
+        font-size: 0.7rem;
+        padding: 0.2rem 0.4rem;
+    }
+    
+    .btn-view {
+        font-size: 0.75rem;
+        padding: 0.2rem 0.4rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-header h1 {
+        font-size: 1.1rem;
+    }
+    
+    .search-filters {
+        padding: 0.5rem;
+    }
+    
+    .rocks-table {
+        font-size: 0.8rem;
+    }
+    
+    .rocks-table th,
+    .rocks-table td {
+        padding: 0.4rem 0.2rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <h1><i class="bi bi-list-ul me-2"></i>Rock List View</h1>
+    <p>Browse all verified rock samples</p>
+</div>
+
+<!-- Search and Filters -->
+<div class="search-filters">
+    <form method="GET" action="{{ url_for('personnel_rock_list') }}" class="row g-3">
+        <div class="col-md-6">
+            <label for="search" class="form-label">Search</label>
+            <input type="text" class="form-control" id="search" name="search" 
+                   placeholder="Search by rock ID, type, or location">
+        </div>
+        <div class="col-md-4">
+            <label for="rock_type" class="form-label">Rock Type</label>
+            <select class="form-select" id="rock_type" name="rock_type">
+                <option value="">All Types</option>
+                <option value="igneous">Igneous</option>
+                <option value="sedimentary">Sedimentary</option>
+                <option value="metamorphic">Metamorphic</option>
+            </select>
+        </div>
+        <div class="col-md-2 d-flex align-items-end">
+            <button type="submit" class="btn btn-search w-100">
+                <i class="bi bi-search me-1"></i>Search
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Rocks List Table -->
+<div class="rocks-list-container">
+    <div class="table-responsive">
+        <table class="rocks-table table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>Rock ID</th>
+                    <th>Type</th>
+                    <th>Location</th>
+                    <th>Submitted By</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if rocks %}
+                    {% for rock in rocks %}
+                    <tr>
+                        <td>{{ rock.rock_id }}</td>
+                        <td>{{ rock.rock_type }}</td>
+                        <td>{{ rock.location_name }}</td>
+                        <td>{{ rock.submitted_by.username if rock.submitted_by else 'Unknown' }}</td>
+                        <td>{{ rock.created_at.strftime('%Y-%m-%d') if rock.created_at else '' }}</td>
+                        <td>
+                            <span class="status-badge badge 
+                                {% if rock.status == 'verified' %}bg-success
+                                {% elif rock.status == 'pending' %}bg-warning text-dark
+                                {% else %}bg-danger{% endif %}">
+                                {{ rock.status|title }}
+                            </span>
+                        </td>
+                        <td>
+                            <a href="{{ url_for('personnel_rock_detail', sample_id=rock.sample_id) }}" class="btn-view">
+                                <i class="bi bi-eye-fill me-1"></i>View
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="7" class="no-rocks">
+                            <i class="bi bi-inbox"></i>
+                            <h5>No rocks found</h5>
+                        </td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

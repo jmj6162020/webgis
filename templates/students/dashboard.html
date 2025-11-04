@@ -1,0 +1,427 @@
+{% extends "students_base.html" %}
+
+{% block title %}Student Dashboard - Rock Sample Index{% endblock %}
+
+{% block page_styles %}
+<style>
+/* Student Dashboard Specific Styles */
+.profile-picture {
+    width: 60px;
+    height: 60px;
+    background: white;
+    color: #8B0000;
+    font-weight: bold;
+    border: 2px solid #8B0000;
+}
+
+.welcome-section {
+    margin-bottom: 1rem;
+}
+
+.welcome-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.notification-bar {
+    background: #6c757d;
+    color: white;
+    padding: 0.75rem 1rem;
+    border-radius: 0.375rem;
+    font-size: 0.9rem;
+}
+
+/* Stats Cards - Compact */
+.stat-card {
+    background: #8B0000;
+    box-shadow: 0 2px 8px rgba(139, 0, 0, 0.2);
+    padding: 1rem;
+}
+
+/* Chart Section */
+.chart-section {
+    background: white;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.chart-section h3 {
+    color: #8B0000;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    font-size: 1rem;
+    text-align: center;
+}
+
+.chart-container {
+    height: 300px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stat-icon {
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 0.75rem;
+}
+
+.stat-icon i {
+    color: white;
+    font-size: 1.2rem;
+}
+
+.stat-card h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.stat-card p {
+    font-size: 0.85rem;
+    margin-bottom: 0;
+}
+
+/* Recent Samples Section - Compact */
+.recent-rocks {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.section-title {
+    background: #8B0000;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    padding: 0.75rem 1rem;
+    margin: 0;
+    border-bottom: none;
+}
+
+.recent-samples-table {
+    margin-bottom: 0;
+    font-size: 0.9rem;
+}
+
+.recent-samples-table thead th {
+    background: #8B0000 !important;
+    color: white;
+    white-space: nowrap;
+    text-align: center;
+    padding: 0.75rem 0.5rem;
+    font-weight: 600;
+    border: none;
+    font-size: 0.85rem;
+}
+
+.recent-samples-table tbody td {
+    white-space: nowrap;
+    text-align: center;
+    vertical-align: middle;
+    padding: 0.75rem 0.5rem;
+    border-bottom: 1px solid #dee2e6;
+    font-size: 0.85rem;
+}
+
+.recent-samples-table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.call-to-action {
+    text-align: center;
+    padding: 1rem 0;
+    font-style: italic;
+    color: #dc3545;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .welcome-title {
+        font-size: 1.25rem;
+    }
+    
+    .notification-bar {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.8rem;
+    }
+    
+    .section-title {
+        font-size: 1rem;
+        padding: 0.5rem 0.75rem;
+    }
+    
+    .recent-samples-table {
+        font-size: 0.8rem;
+    }
+    
+    .recent-samples-table th,
+    .recent-samples-table td {
+        padding: 0.5rem 0.25rem;
+    }
+    
+    .stat-card {
+        padding: 0.75rem;
+    }
+    
+    .stat-icon {
+        width: 35px;
+        height: 35px;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-icon i {
+        font-size: 1rem;
+    }
+    
+    .stat-card h3 {
+        font-size: 0.9rem;
+    }
+    
+    .stat-card p {
+        font-size: 0.8rem;
+    }
+    
+    .chart-section {
+        padding: 0.75rem;
+    }
+    
+    .chart-container {
+        height: 250px;
+    }
+    
+    .chart-section h3 {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .welcome-title {
+        font-size: 1.1rem;
+    }
+    
+    .call-to-action {
+        padding: 0.75rem 0;
+        font-size: 0.9rem;
+    }
+    
+    .section-title {
+        font-size: 0.95rem;
+        padding: 0.5rem;
+    }
+    
+    .stat-card {
+        padding: 0.5rem;
+    }
+    
+    .chart-section {
+        padding: 0.5rem;
+    }
+    
+    .chart-container {
+        height: 200px;
+    }
+    
+    .chart-section h3 {
+        font-size: 0.85rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Welcome Section -->
+<div class="welcome-section mb-3">
+    <h1 class="welcome-title text-danger fw-bold mb-2">WELCOME {{ student.first_name.upper() if student and student.first_name else 'ROCKSTAR' }}!</h1>
+</div>
+
+<!-- Stats Cards -->
+<div class="stats-cards row g-3 mb-3">
+    <div class="col-md-4">
+        <div class="stat-card text-center text-white rounded-3 shadow">
+            <div class="stat-icon">
+                <i class="bi bi-person-badge-fill"></i>
+            </div>
+            <h3 class="fw-semibold">You've logged {% if stats.total_submissions %}{{ stats.total_submissions }}{% else %}0{% endif %} rocks!</h3>
+            <p class="opacity-75">Keep up the great work!</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card text-center text-white rounded-3 shadow">
+            <div class="stat-icon">
+                <i class="bi bi-gem"></i>
+            </div>
+            <h3 class="fw-semibold">{% if stats.unique_rock_types %}{{ stats.unique_rock_types }}{% else %}0{% endif %} Sample Types</h3>
+            <p class="opacity-75">Diverse collection</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card text-center text-white rounded-3 shadow">
+            <div class="stat-icon">
+                <i class="bi bi-geo-alt-fill"></i>
+            </div>
+            <h3 class="fw-semibold">{% if stats.unique_locations %}{{ stats.unique_locations }}{% else %}0{% endif %} Locations Covered</h3>
+            <p class="opacity-75">Expanding your reach</p>
+        </div>
+    </div>
+</div>
+
+<!-- Chart Section -->
+<div class="chart-section">
+    <h3><i class="bi bi-bar-chart-fill me-2"></i>Sample Status Overview</h3>
+    <div class="chart-container">
+        <canvas id="statusChart"></canvas>
+    </div>
+</div>
+
+<!-- Recent Samples Section -->
+<div class="recent-rocks">
+    <h2 class="section-title text-center">RECENT SAMPLES</h2>
+    <div class="table-responsive">
+        <table class="recent-samples-table table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>Rock ID</th>
+                    <th>Type</th>
+                    <th>Location</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if recent_rocks %}
+                    {% for rock in recent_rocks %}
+                    <tr>
+                        <td>{{ rock.rock_id }}</td>
+                        <td>{{ rock.rock_type }}</td>
+                        <td>{{ rock.location_name }}</td>
+                        <td>{{ rock.created_at.strftime('%Y-%m-%d') if rock.created_at else '' }}</td>
+                        <td>
+                            <span class="badge {% if rock.status == 'verified' %}bg-success{% elif rock.status == 'pending' %}bg-warning text-dark{% else %}bg-danger{% endif %}">
+                                {{ rock.status|title }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center py-5 text-muted">
+                            No rocks found. Start by adding your first rock!
+                        </td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Call to Action -->
+<div class="call-to-action text-center py-4 fst-italic text-danger fs-5 fw-medium">
+    Ready for your next field survey?
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+// Initialize bar chart when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('statusChart').getContext('2d');
+    
+    // Get data from backend
+    const verifiedCount = {{ stats.verified_count or 0 }};
+    const pendingCount = {{ stats.pending_count or 0 }};
+    const rejectedCount = {{ stats.rejected_count or 0 }};
+    
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Verified', 'Pending', 'Rejected'],
+            datasets: [{
+                label: 'Number of Samples',
+                data: [verifiedCount, pendingCount, rejectedCount],
+                backgroundColor: [
+                    '#28a745',  // Green for verified
+                    '#ffc107',  // Yellow for pending
+                    '#dc3545'   // Red for rejected
+                ],
+                borderColor: [
+                    '#1e7e34',  // Darker green
+                    '#e0a800',  // Darker yellow
+                    '#bd2130'   // Darker red
+                ],
+                borderWidth: 2,
+                borderRadius: 6,
+                borderSkipped: false,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    titleColor: 'white',
+                    bodyColor: 'white',
+                    borderColor: '#8B0000',
+                    borderWidth: 1,
+                    callbacks: {
+                        label: function(context) {
+                            return context.label + ': ' + context.parsed.y + ' samples';
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1,
+                        color: '#666',
+                        font: {
+                            size: 12
+                        }
+                    },
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.1)',
+                        drawBorder: false
+                    }
+                },
+                x: {
+                    ticks: {
+                        color: '#666',
+                        font: {
+                            size: 12,
+                            weight: 'bold'
+                        }
+                    },
+                    grid: {
+                        display: false
+                    }
+                }
+            },
+            animation: {
+                duration: 1000,
+                easing: 'easeInOutQuart'
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

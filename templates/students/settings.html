@@ -1,0 +1,237 @@
+{% extends "students_base.html" %}
+
+{% block title %}Settings - Student Dashboard{% endblock %}
+
+{% block page_styles %}
+<style>
+/* Settings Page Specific Styles - Compact */
+.page-header {
+    background: #8B0000;
+    color: white;
+    padding: 1rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 8px rgba(139, 0, 0, 0.2);
+}
+
+.page-header h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.page-header p {
+    font-size: 0.9rem;
+    margin: 0;
+    opacity: 0.9;
+}
+
+.settings-section {
+    background: white;
+    border-radius: 6px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.section-title {
+    color: #8B0000;
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    border-bottom: 2px solid #8B0000;
+    padding-bottom: 0.5rem;
+}
+
+.form-label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.form-control {
+    font-size: 0.9rem;
+    padding: 0.5rem 0.75rem;
+}
+
+.form-control:focus {
+    border-color: #8B0000;
+    box-shadow: 0 0 0 0.2rem rgba(139, 0, 0, 0.25);
+}
+
+.btn-update {
+    background: #8B0000;
+    color: white;
+    border: none;
+    padding: 0.5rem 1.5rem;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.btn-update:hover {
+    background: #6d0000;
+    color: white;
+}
+
+.info-note {
+    background: #d1ecf1;
+    border: 1px solid #bee5eb;
+    color: #0c5460;
+    padding: 0.75rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .page-header h1 {
+        font-size: 1.25rem;
+    }
+    
+    .page-header p {
+        font-size: 0.8rem;
+    }
+    
+    .settings-section {
+        padding: 0.75rem;
+    }
+    
+    .settings-section h2 {
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+    }
+    
+    .form-control,
+    .form-select {
+        padding: 0.4rem 0.6rem;
+        font-size: 0.85rem;
+    }
+    
+    .btn-update {
+        padding: 0.4rem 1rem;
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-header h1 {
+        font-size: 1.1rem;
+    }
+    
+    .settings-section {
+        padding: 0.5rem;
+    }
+    
+    .settings-section h2 {
+        font-size: 1.1rem;
+    }
+    
+    .form-control,
+    .form-select {
+        padding: 0.35rem 0.5rem;
+        font-size: 0.8rem;
+    }
+    
+    .btn-update {
+        padding: 0.35rem 0.75rem;
+        font-size: 0.8rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <h1><i class="bi bi-gear-fill me-3"></i>Account Settings</h1>
+    <p>Change your password and view profile information</p>
+</div>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="mb-3">
+        {% for category, message in messages %}
+            <div class="alert {% if category in ['success'] %}alert-success{% elif category in ['error','danger'] %}alert-danger{% else %}alert-info{% endif %} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+{% endwith %}
+
+<!-- Profile Information (Read-Only) -->
+<div class="settings-section">
+    <h2 class="section-title"><i class="bi bi-person-fill me-2"></i>Profile Information</h2>
+    <div class="mb-3">
+        <label class="form-label">Full Name</label>
+        <div class="form-control-plaintext bg-light p-3 rounded border">
+            <i class="bi bi-person me-2"></i>{{ (user.first_name ~ ' ' ~ user.last_name)|trim if user else 'N/A' }}
+        </div>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Email Address</label>
+        <div class="form-control-plaintext bg-light p-3 rounded border">
+            <i class="bi bi-envelope me-2"></i>{{ user.email if user else 'N/A' }}
+        </div>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Student ID</label>
+        <div class="form-control-plaintext bg-light p-3 rounded border">
+            <i class="bi bi-card-text me-2"></i>{{ user.school_id if user else 'N/A' }}
+        </div>
+    </div>
+    <div class="info-note">
+        <i class="bi bi-info-circle me-2"></i>
+        <strong>Note:</strong> Profile information is managed by your institution and cannot be edited here. 
+        Please contact your administrator if you need to update your profile details.
+    </div>
+</div>
+
+<!-- Password Settings -->
+<div class="settings-section">
+    <h2 class="section-title"><i class="bi bi-shield-lock-fill me-2"></i>Change Password</h2>
+    <form method="POST" action="{{ url_for('student_change_password') }}">
+        {{ form.hidden_tag() if form }}
+        <div class="mb-3">
+            <label for="current_password" class="form-label">Current Password</label>
+            <input type="password" class="form-control" id="current_password" name="current_password" required>
+        </div>
+        <div class="mb-3">
+            <label for="new_password" class="form-label">New Password</label>
+            <input type="password" class="form-control" id="new_password" name="new_password" required>
+        </div>
+        <div class="mb-3">
+            <label for="confirm_password" class="form-label">Confirm New Password</label>
+            <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+        </div>
+        <button type="submit" class="btn btn-update">
+            <i class="bi bi-shield-lock-fill me-2"></i>Update Password
+        </button>
+    </form>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Password validation
+document.querySelector('form[action*="change-password"]')?.addEventListener('submit', function(e) {
+    const newPassword = document.getElementById('new_password').value;
+    const confirmPassword = document.getElementById('confirm_password').value;
+    
+    if (newPassword !== confirmPassword) {
+        e.preventDefault();
+        alert('New password and confirm password do not match');
+        return false;
+    }
+    
+    if (newPassword.length < 8) {
+        e.preventDefault();
+        alert('Password must be at least 8 characters long');
+        return false;
+    }
+});
+</script>
+{% endblock %}

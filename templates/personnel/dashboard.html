@@ -1,0 +1,594 @@
+{% extends "personnel_base.html" %}
+
+{% block title %}Personnel Dashboard - Rock Sample Index{% endblock %}
+
+{% block page_styles %}
+<style>
+/* Personnel Dashboard Specific Styles - Compact */
+.profile-picture {
+    width: 40px;
+    height: 40px;
+    background: white;
+    color: #8B0000;
+    font-weight: bold;
+    border: 2px solid #8B0000;
+}
+
+.welcome-banner {
+    background: #8B0000;
+    color: white;
+    padding: 1rem;
+    text-align: center;
+    margin-bottom: 1rem;
+    border-radius: 6px;
+}
+
+.welcome-banner h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.welcome-banner p {
+    font-size: 0.9rem;
+    margin: 0;
+    opacity: 0.9;
+}
+
+.verify-btn {
+    background: #8B0000;
+    color: white;
+    border: none;
+    padding: 0.5rem 1.5rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-radius: 6px;
+    margin: 1rem 0;
+    transition: all 0.3s ease;
+}
+
+.verify-btn:hover {
+    background: #6d0000;
+    color: white;
+}
+
+/* Stats Cards - Compact */
+.stat-card {
+    background: #8B0000;
+    box-shadow: 0 2px 8px rgba(139, 0, 0, 0.2);
+    padding: 1rem;
+}
+
+/* Chart Section */
+.chart-section {
+    background: white;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.chart-section h3 {
+    color: #8B0000;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    font-size: 1rem;
+    text-align: center;
+}
+
+.chart-container {
+    height: 300px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stat-icon {
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 0.75rem;
+}
+
+.stat-icon i {
+    color: white;
+    font-size: 1.2rem;
+}
+
+.stat-card h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.stat-card p {
+    font-size: 0.85rem;
+    margin-bottom: 0;
+}
+
+/* Recent Pending Submissions Table Styling - Compact */
+.pending-submissions-container {
+    background: white;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.pending-submissions-header {
+    background: #8B0000;
+    color: white;
+    padding: 0.75rem 1rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.pending-table {
+    margin-bottom: 0;
+    font-size: 0.9rem;
+}
+
+.pending-table thead th {
+    background: #8B0000 !important;
+    color: white;
+    white-space: nowrap;
+    text-align: center;
+    padding: 0.75rem 0.5rem;
+    font-weight: 600;
+    border: none;
+    font-size: 0.85rem;
+}
+
+.pending-table tbody td {
+    white-space: nowrap;
+    text-align: center;
+    vertical-align: middle;
+    padding: 0.75rem 0.5rem;
+    border-bottom: 1px solid #dee2e6;
+    font-size: 0.85rem;
+}
+
+.pending-table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* Action Buttons */
+.btn-view {
+    background: #0d6efd;
+    color: white;
+    border: none;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 0.8rem;
+    margin-right: 0.25rem;
+    display: inline-block;
+}
+
+.btn-view:hover {
+    background: #0b5ed7;
+    color: white;
+    text-decoration: none;
+}
+
+.btn-verify {
+    background: #198754;
+    color: white;
+    border: none;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 0.8rem;
+    display: inline-block;
+}
+
+.btn-verify:hover {
+    background: #157347;
+    color: white;
+    text-decoration: none;
+}
+
+.btn-primary-custom {
+    background: #8B0000;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+}
+
+.btn-primary-custom:hover {
+    background: #700000;
+    color: white;
+    text-decoration: none;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .welcome-banner h1 {
+        font-size: 1.25rem;
+    }
+    
+    .welcome-banner p {
+        font-size: 0.8rem;
+    }
+    
+    .verify-btn {
+        padding: 0.4rem 1rem;
+        font-size: 0.85rem;
+    }
+    
+    .stat-card {
+        padding: 0.75rem;
+    }
+    
+    .stat-icon {
+        width: 35px;
+        height: 35px;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-icon i {
+        font-size: 1rem;
+    }
+    
+    .stat-card h3 {
+        font-size: 0.9rem;
+    }
+    
+    .stat-card p {
+        font-size: 0.8rem;
+    }
+    
+    .chart-section {
+        padding: 0.75rem;
+    }
+    
+    .chart-container {
+        height: 250px;
+    }
+    
+    .chart-section h3 {
+        font-size: 0.9rem;
+    }
+    
+    .pending-submissions-header {
+        font-size: 1rem;
+        padding: 0.5rem 0.75rem;
+    }
+    
+    .pending-table th,
+    .pending-table td {
+        padding: 0.5rem 0.25rem;
+    }
+    
+    .btn-view,
+    .btn-verify {
+        font-size: 0.75rem;
+        padding: 0.2rem 0.4rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .welcome-banner h1 {
+        font-size: 1.1rem;
+    }
+    
+    .stat-card {
+        padding: 0.5rem;
+    }
+    
+    .chart-section {
+        padding: 0.5rem;
+    }
+    
+    .chart-container {
+        height: 200px;
+    }
+    
+    .chart-section h3 {
+        font-size: 0.85rem;
+    }
+    
+    .pending-table {
+        font-size: 0.8rem;
+    }
+    
+    .btn-view,
+    .btn-verify {
+        font-size: 0.7rem;
+        padding: 0.15rem 0.3rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Welcome Banner -->
+<div class="welcome-banner">
+    <h1 class="mb-0">WELCOME FACULTY!</h1>
+    <p class="mb-0">Review and verify student rock sample submissions</p>
+</div>
+
+<!-- Stats Cards -->
+<div class="stats-cards row g-3 mb-3 justify-content-center">
+    <div class="col-lg-4 col-md-6">
+        <div class="stat-card text-center text-white rounded-3 shadow">
+            <div class="stat-icon">
+                <i class="bi bi-gem"></i>
+            </div>
+            <h3 class="fw-semibold">{{ total_rocks }}</h3>
+            <p class="opacity-75">Total Rocks Submitted</p>
+        </div>
+    </div>
+    <div class="col-lg-4 col-md-6">
+        <div class="stat-card text-center text-white rounded-3 shadow">
+            <div class="stat-icon">
+                <i class="bi bi-clock-history"></i>
+            </div>
+            <h3 class="fw-semibold">{{ pending_rocks }}</h3>
+            <p class="opacity-75">Pending Verifications</p>
+        </div>
+    </div>
+    <div class="col-lg-4 col-md-6">
+        <div class="stat-card text-center text-white rounded-3 shadow">
+            <div class="stat-icon">
+                <i class="bi bi-check-circle-fill"></i>
+            </div>
+            <h3 class="fw-semibold">{{ approved_rocks }}</h3>
+            <p class="opacity-75">Approved Rocks</p>
+        </div>
+    </div>
+</div>
+
+<!-- Chart Section -->
+<div class="chart-section">
+    <h3><i class="bi bi-bar-chart-fill me-2"></i>Sample Status Overview</h3>
+    <div class="chart-container">
+        <canvas id="statusChart"></canvas>
+    </div>
+</div>
+
+<!-- Recent Pending Submissions -->
+{% if recent_pending %}
+<div class="row">
+    <div class="col-12">
+        <div class="pending-submissions-container">
+            <div class="pending-submissions-header text-center">
+                <i class="bi bi-clock-history me-2"></i>Recent Pending Submissions
+            </div>
+            <div class="table-responsive">
+                <table class="pending-table table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Rock ID</th>
+                            <th>Type</th>
+                            <th>Location</th>
+                            <th>Submitted By</th>
+                            <th>Submitted On</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for rock in recent_pending %}
+                        <tr>
+                            <td>
+                                <strong>{{ rock.rock_id }}</strong>
+                                {% if rock.rock_index %}
+                                <br><small class="text-muted">{{ rock.rock_index }}</small>
+                                {% endif %}
+                            </td>
+                            <td>{{ rock.rock_type }}</td>
+                            <td>
+                                <i class="bi bi-geo-alt-fill me-1 text-danger"></i>
+                                {{ rock.location_name }}
+                            </td>
+                            <td>
+                                <div>{{ rock.student_name }}</div>
+                                {% if rock.school_id %}
+                                <small class="text-muted">{{ rock.school_id }}</small>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <small>{{ rock.created_at.strftime('%m/%d/%Y %I:%M %p') if rock.created_at else 'N/A' }}</small>
+                            </td>
+                            <td>
+                                <a href="{{ url_for('personnel_rock_detail', sample_id=rock.sample_id) }}" 
+                                   class="btn-view">
+                                    <i class="bi bi-eye me-1"></i>View
+                                </a>
+                                <a href="{{ url_for('personnel_verification_panel') }}" 
+                                   class="btn-verify">
+                                    <i class="bi bi-check me-1"></i>Verify
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% if recent_pending|length >= 10 %}
+            <div class="text-center p-3" style="background: #f8f9fa; border-top: 1px solid #dee2e6;">
+                <a href="{{ url_for('personnel_verification_panel') }}" class="btn-primary-custom">
+                    <i class="bi bi-list-check me-2"></i>View All Pending Submissions
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% else %}
+<!-- No Pending Submissions -->
+<div class="row">
+    <div class="col-12">
+        <div class="pending-submissions-container">
+            <div class="pending-submissions-header">
+                <i class="bi bi-clock-history me-2"></i>Recent Pending Submissions
+            </div>
+            <div class="text-center py-5">
+                <i class="bi bi-check-circle-fill display-1 text-success mb-3"></i>
+                <h4 class="text-success">All Caught Up!</h4>
+                <p class="text-muted mb-0">There are currently no pending rock submissions to verify.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+// Initialize bar chart when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('statusChart').getContext('2d');
+    
+    // Get data from backend
+    const totalRocks = {{ total_rocks or 0 }};
+    const pendingRocks = {{ pending_rocks or 0 }};
+    const approvedRocks = {{ approved_rocks or 0 }};
+    const rejectedRocks = {{ rejected_rocks or 0 }};
+    
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Total', 'Pending', 'Approved', 'Rejected'],
+            datasets: [{
+                label: 'Number of Samples',
+                data: [totalRocks, pendingRocks, approvedRocks, rejectedRocks],
+                backgroundColor: [
+                    '#6c757d',  // Gray for total
+                    '#ffc107',  // Yellow for pending
+                    '#28a745',  // Green for approved
+                    '#dc3545'   // Red for rejected
+                ],
+                borderColor: [
+                    '#5a6268',  // Darker gray
+                    '#e0a800',  // Darker yellow
+                    '#1e7e34',  // Darker green
+                    '#bd2130'   // Darker red
+                ],
+                borderWidth: 2,
+                borderRadius: 6,
+                borderSkipped: false,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    titleColor: 'white',
+                    bodyColor: 'white',
+                    borderColor: '#8B0000',
+                    borderWidth: 1,
+                    callbacks: {
+                        label: function(context) {
+                            return context.label + ': ' + context.parsed.y + ' samples';
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1,
+                        color: '#666',
+                        font: {
+                            size: 12
+                        }
+                    },
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.1)',
+                        drawBorder: false
+                    }
+                },
+                x: {
+                    ticks: {
+                        color: '#666',
+                        font: {
+                            size: 12,
+                            weight: 'bold'
+                        }
+                    },
+                    grid: {
+                        display: false
+                    }
+                }
+            },
+            animation: {
+                duration: 1000,
+                easing: 'easeInOutQuart'
+            }
+        }
+    });
+});
+
+// Rock approval/rejection functions
+function approveRock(rockId) {
+    if (confirm('Are you sure you want to approve this rock submission?')) {
+        const formData = new FormData();
+        formData.append('action', 'approve');
+        formData.append('remarks', '');
+        
+        fetch(`/personnel/verify-rock/${rockId}`, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (response.ok) {
+                location.reload();
+            } else {
+                alert('Error approving rock submission');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error approving rock submission');
+        });
+    }
+}
+
+function rejectRock(rockId) {
+    if (confirm('Are you sure you want to reject this rock submission?')) {
+        const reason = prompt('Please provide a reason for rejection (optional):');
+        
+        const formData = new FormData();
+        formData.append('action', 'reject');
+        formData.append('remarks', reason || '');
+        
+        fetch(`/personnel/verify-rock/${rockId}`, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (response.ok) {
+                location.reload();
+            } else {
+                alert('Error rejecting rock submission');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error rejecting rock submission');
+        });
+    }
+}
+</script>
+{% endblock %}

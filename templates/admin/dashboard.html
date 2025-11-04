@@ -1,0 +1,655 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Admin Dashboard - Rock Sample Index{% endblock %}
+
+{% block page_styles %}
+<style>
+/* Admin Dashboard Compact Styles */
+.welcome-banner {
+    background: linear-gradient(135deg, #8B0000 0%, #a00000 100%);
+    color: white;
+    padding: 1rem 1.5rem;
+    text-align: center;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(139, 0, 0, 0.2);
+}
+
+.welcome-banner h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.welcome-banner p {
+    font-size: 0.9rem;
+    margin: 0;
+    opacity: 0.9;
+}
+
+/* Main Content Layout */
+.main-content-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.left-column, .right-column {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+    height: 100%;
+}
+
+/* Statistics Cards - Compact */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 0;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 6px;
+    padding: 0.75rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+    border-left: 3px solid #8B0000;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+}
+
+.stat-card .stat-icon {
+    font-size: 1.2rem;
+    color: #8B0000;
+    margin-bottom: 0.5rem;
+}
+
+.stat-card .stat-number {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #8B0000;
+    margin-bottom: 0.25rem;
+}
+
+.stat-card .stat-label {
+    font-size: 0.75rem;
+    color: #666;
+    font-weight: 500;
+}
+
+/* Summary Section - Compact */
+.summary-section {
+    margin-bottom: 0;
+}
+
+.summary-card {
+    background: white;
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-left: 3px solid #8B0000;
+}
+
+.summary-card h3 {
+    color: #8B0000;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    text-align: center;
+    font-size: 1rem;
+}
+
+.summary-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 0.75rem;
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border-left: 2px solid #8B0000;
+}
+
+.summary-label {
+    font-weight: 500;
+    color: #666;
+    font-size: 0.8rem;
+}
+
+.summary-value {
+    font-weight: 700;
+    color: #8B0000;
+    font-size: 0.9rem;
+}
+
+/* Charts Section - Compact */
+.charts-section {
+    margin-bottom: 0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.chart-card {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    min-height: 450px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.chart-card h3 {
+    color: #8B0000;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    text-align: center;
+    font-size: 1rem;
+}
+
+.chart-container {
+    height: 400px;
+    position: relative;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Recent Activity - Compact */
+.activity-section {
+    background: white;
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 0;
+}
+
+/* Recent Activity - Full Width */
+.activity-section-full {
+    background: white;
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin: 1rem 0;
+    width: 100%;
+}
+
+.activity-section h3,
+.activity-section-full h3 {
+    color: #8B0000;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    font-size: 1rem;
+}
+
+.activity-item {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.activity-item:last-child {
+    border-bottom: none;
+}
+
+.activity-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 0.75rem;
+    font-size: 1rem;
+}
+
+.activity-icon.student { background: #e3f2fd; color: #1976d2; }
+.activity-icon.personnel { background: #f3e5f5; color: #7b1fa2; }
+.activity-icon.admin { background: #ffebee; color: #d32f2f; }
+
+.activity-content {
+    flex: 1;
+}
+
+.activity-text {
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+    font-size: 0.85rem;
+}
+
+.activity-time {
+    font-size: 0.75rem;
+    color: #666;
+}
+
+/* Admin Action Buttons - Compact */
+.admin-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.admin-btn {
+    background: linear-gradient(135deg, #8B0000 0%, #a00000 100%);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    flex: 1;
+    min-width: 150px;
+    box-shadow: 0 2px 8px rgba(139, 0, 0, 0.2);
+}
+
+.admin-btn:hover {
+    background: linear-gradient(135deg, #6d0000 0%, #8B0000 100%);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 12px rgba(139, 0, 0, 0.3);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .welcome-banner h1 {
+        font-size: 1.25rem;
+    }
+    
+    .welcome-banner p {
+        font-size: 0.8rem;
+    }
+    
+    .main-content-layout {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .left-column, .right-column {
+        gap: 1rem;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        gap: 0.5rem;
+    }
+    
+    .stat-card {
+        padding: 0.5rem;
+    }
+    
+    .stat-card .stat-icon {
+        font-size: 1rem;
+        margin-bottom: 0.25rem;
+    }
+    
+    .stat-card .stat-number {
+        font-size: 1rem;
+    }
+    
+    .stat-card .stat-label {
+        font-size: 0.7rem;
+    }
+    
+    .chart-container {
+        height: 200px;
+    }
+    
+    .admin-actions {
+        gap: 0.5rem;
+    }
+    
+    .admin-btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.8rem;
+        min-width: 120px;
+    }
+}
+
+@media (max-width: 480px) {
+    .welcome-banner {
+        padding: 0.75rem 1rem;
+    }
+    
+    .welcome-banner h1 {
+        font-size: 1.1rem;
+    }
+    
+    .stat-card {
+        padding: 0.4rem;
+    }
+    
+    .stat-card .stat-icon {
+        font-size: 0.9rem;
+        margin-bottom: 0.2rem;
+    }
+    
+    .stat-card .stat-number {
+        font-size: 0.9rem;
+    }
+    
+    .stat-card .stat-label {
+        font-size: 0.65rem;
+    }
+    
+    .chart-container {
+        height: 180px;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Welcome Banner -->
+<div class="welcome-banner">
+    <h1 class="mb-0">ADMIN DASHBOARD</h1>
+    <p class="mb-0">Comprehensive overview of rock sample submissions and system analytics</p>
+</div>
+
+<!-- Admin Action Buttons -->
+<div class="admin-actions">
+    <button class="admin-btn" onclick="manageUsers()">
+        <i class="bi bi-people-fill me-2"></i>Manage Users
+    </button>
+    <button class="admin-btn" onclick="manageSettings()">
+        <i class="bi bi-gear-fill me-2"></i>Manage Settings
+    </button>
+    <button class="admin-btn" onclick="viewActivityLogs()">
+        <i class="bi bi-clock-history me-2"></i>View Activity Logs
+    </button>
+</div>
+
+<!-- Main Content Layout -->
+<div class="main-content-layout">
+    <!-- Left Column -->
+    <div class="left-column">
+        <!-- Charts Section -->
+        <div class="charts-section">
+            <div class="chart-card">
+                <h3><i class="bi bi-pie-chart-fill me-2"></i>Rock Status Distribution</h3>
+                <div class="chart-container">
+                    <canvas id="statusChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column -->
+    <div class="right-column">
+        <!-- Statistics Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="bi bi-people-fill"></i>
+                </div>
+                <div class="stat-number">{{ stats.total_users or 0 }}</div>
+                <div class="stat-label">Total Users</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="bi bi-person-badge-fill"></i>
+                </div>
+                <div class="stat-number">{{ stats.total_students or 0 }}</div>
+                <div class="stat-label">Students</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="bi bi-person-check-fill"></i>
+                </div>
+                <div class="stat-number">{{ stats.total_personnel or 0 }}</div>
+                <div class="stat-label">Personnel</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="bi bi-gem"></i>
+                </div>
+                <div class="stat-number">{{ stats.total_rocks or 0 }}</div>
+                <div class="stat-label">Total Rock Samples</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="bi bi-check-circle-fill"></i>
+                </div>
+                <div class="stat-number">{{ stats.verified_rocks or 0 }}</div>
+                <div class="stat-label">Verified Samples</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="bi bi-clock-fill"></i>
+                </div>
+                <div class="stat-number">{{ stats.pending_rocks or 0 }}</div>
+                <div class="stat-label">Pending Review</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="bi bi-x-circle-fill"></i>
+                </div>
+                <div class="stat-number">{{ stats.rejected_rocks or 0 }}</div>
+                <div class="stat-label">Rejected Samples</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="bi bi-archive-fill"></i>
+                </div>
+                <div class="stat-number">{{ stats.archived_rocks or 0 }}</div>
+                <div class="stat-label">Archived Samples</div>
+            </div>
+        </div>
+
+        <!-- Summary Section -->
+        <div class="summary-section">
+            <div class="summary-card">
+                <h3><i class="bi bi-graph-up me-2"></i>System Overview</h3>
+                <div class="summary-stats">
+                    <div class="summary-item">
+                        <span class="summary-label">Total Submissions:</span>
+                        <span class="summary-value">{{ stats.total_rocks or 0 }}</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Verification Rate:</span>
+                        <span class="summary-value">
+                            {% if stats.total_rocks and stats.total_rocks > 0 %}
+                                {{ "%.1f"|format((stats.verified_rocks or 0) / stats.total_rocks * 100) }}%
+                            {% else %}
+                                0%
+                            {% endif %}
+                            </span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Pending Review:</span>
+                        <span class="summary-value">{{ stats.pending_rocks or 0 }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activity Section - Full Width -->
+<div class="activity-section-full">
+    <h3  class="text-center"><i class="bi bi-activity me-2"></i>Recent Activity</h3>
+    {% if recent_activity %}
+        {% for activity in recent_activity %}
+        <div class="activity-item">
+            <div class="activity-icon {{ activity.role }}">
+                {% if activity.role == 'student' %}
+                    <i class="bi bi-person-fill"></i>
+                {% elif activity.role == 'personnel' %}
+                    <i class="bi bi-person-check-fill"></i>
+                {% else %}
+                    <i class="bi bi-shield-fill"></i>
+                {% endif %}
+            </div>
+            <div class="activity-content">
+                <div class="activity-text">
+                    <strong>{{ activity.user_name }}</strong> 
+                    {{ activity.description }}
+                    {% if activity.rock_id %}
+                        <span class="text-muted">({{ activity.rock_id }})</span>
+                    {% endif %}
+                </div>
+                <div class="activity-time">
+                    {{ activity.timestamp.strftime('%Y-%m-%d %H:%M') if activity.timestamp else '' }}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="text-center text-muted py-4">
+            <i class="bi bi-inbox display-4 mb-3"></i>
+            <p>No recent activity found</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Quick Actions -->
+<div class="text-center">
+    <p class="text-muted mb-0">
+        <i class="bi bi-lightbulb me-2"></i>
+        Use the navigation menu to access detailed views and management tools
+    </p>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Chart.js Datalabels Plugin -->
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+
+<script>
+// Admin action functions
+function manageUsers() {
+    window.location.href = "{{ url_for('admin_manage_users') }}";
+}
+
+function manageSettings() {
+    window.location.href = "{{ url_for('admin_settings') }}";
+}
+
+function viewActivityLogs() {
+    window.location.href = "{{ url_for('admin_activity_logs') }}";
+}
+
+// Initialize charts when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Register the datalabels plugin
+    Chart.register(ChartDataLabels);
+    // Rock Status Distribution Chart (Pie Chart)
+    const statusCtx = document.getElementById('statusChart').getContext('2d');
+    new Chart(statusCtx, {
+        type: 'pie',
+        data: {
+            labels: ['Verified', 'Pending', 'Rejected'],
+            datasets: [{
+                data: [
+                    {{ stats.verified_rocks or 0 }},
+                    {{ stats.pending_rocks or 0 }},
+                    {{ stats.rejected_rocks or 0 }}
+                ],
+                backgroundColor: [
+                    '#28a745',  // Green for verified
+                    '#ffc107',  // Yellow for pending
+                    '#dc3545'   // Red for rejected
+                ],
+                borderWidth: 2,
+                borderColor: '#fff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 20,
+                        usePointStyle: true,
+                        generateLabels: function(chart) {
+                            const data = chart.data;
+                            if (data.labels.length && data.datasets.length) {
+                                const dataset = data.datasets[0];
+                                const total = dataset.data.reduce((a, b) => a + b, 0);
+                                return data.labels.map((label, i) => {
+                                    const value = dataset.data[i];
+                                    const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                    return {
+                                        text: `${label}: ${value} (${percentage}%)`,
+                                        fillStyle: dataset.backgroundColor[i],
+                                        strokeStyle: dataset.borderColor || '#fff',
+                                        lineWidth: dataset.borderWidth || 0,
+                                        pointStyle: 'circle',
+                                        hidden: false,
+                                        index: i
+                                    };
+                                });
+                            }
+                            return [];
+                        }
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const percentage = ((context.parsed / total) * 100).toFixed(1);
+                            return context.label + ': ' + context.parsed + ' (' + percentage + '%)';
+                        }
+                    }
+                },
+                datalabels: {
+                    display: true,
+                    color: '#fff',
+                    font: {
+                        weight: 'bold',
+                        size: 12
+                    },
+                    formatter: function(value, context) {
+                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                        const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                        return percentage + '%';
+                    }
+                }
+            }
+        }
+    });
+
+
+    // Add animation to stat cards
+    const statCards = document.querySelectorAll('.stat-card');
+    statCards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+            card.style.transition = 'all 0.6s ease';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, index * 100);
+    });
+});
+</script>
+{% endblock %}

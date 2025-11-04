@@ -1,0 +1,312 @@
+{% extends "students_base.html" %}
+
+{% block title %}Edit Rock - Student Dashboard{% endblock %}
+
+{% block page_styles %}
+<style>
+/* Edit Rock Page Specific Styles */
+.page-header {
+    background: linear-gradient(135deg, #8B0000 0%, #a00000 100%);
+    color: white;
+    padding: 1rem; /* compact header */
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 8px rgba(139, 0, 0, 0.2);
+}
+
+.page-header h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.form-card {
+            background: white;
+    border-radius: 12px;
+    padding: 2rem;
+            margin-bottom: 2rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.form-card h2 {
+    color: #8B0000;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #8B0000;
+}
+
+.form-label {
+    font-weight: 600;
+    color: #333;
+            margin-bottom: 0.5rem;
+        }
+        
+.form-control, .form-select {
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+    padding: 0.75rem;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #8B0000;
+    box-shadow: 0 0 0 0.2rem rgba(139, 0, 0, 0.25);
+}
+
+.btn-submit {
+    background: #8B0000;
+    color: white;
+    border: none;
+    padding: 0.75rem 2rem;
+            font-weight: 600;
+    border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+.btn-submit:hover {
+    background: #a00000;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(139, 0, 0, 0.3);
+}
+
+.image-upload-area {
+    border: 2px dashed #dee2e6;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            background: #f8f9fa;
+    cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+.image-upload-area:hover {
+            border-color: #8B0000;
+    background: #fff;
+}
+
+.image-preview {
+    max-width: 200px;
+    max-height: 200px;
+    border-radius: 8px;
+    margin-top: 1rem;
+}
+
+.current-image {
+    max-width: 200px;
+    max-height: 200px;
+    border-radius: 8px;
+    margin-top: 1rem;
+    border: 2px solid #8B0000;
+}
+
+        @media (max-width: 768px) {
+    .page-header h1 {
+        font-size: 2rem;
+            }
+            
+            .form-card {
+                padding: 1.5rem;
+            }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <h1></i>Edit Rock Sample</h1>
+    <p>Update your rock sample information</p>
+</div>
+
+<form method="POST" action="{{ url_for('student_edit_rock', sample_id=rock.sample_id) }}" enctype="multipart/form-data">
+    {{ form.hidden_tag() if form }}
+    
+    <!-- Rock Sample Information -->
+    <div class="form-card">
+        <h2>Rock Sample Information</h2>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="rock_index" class="form-label">Sample Index *</label>
+                <input type="text" class="form-control" id="rock_index" name="rock_index" 
+                       value="{{ rock.rock_index or '' }}" placeholder="Sample Index" required>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="rock_id" class="form-label">Rock ID *</label>
+                <input type="text" class="form-control" id="rock_id" name="rock_id" 
+                       value="{{ rock.rock_id or '' }}" placeholder="Rock ID" required>
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="rock_type" class="form-label">Rock Type *</label>
+            <select class="form-select" id="rock_type" name="rock_type" required>
+                <option value="">Select Rock Type</option>
+                <option value="Igneous Rock" {% raw %}{% endraw %}{% if rock.rock_type == 'Igneous Rock' %}selected{% endif %}>Igneous Rock</option>
+                <option value="Sedimentary Rock" {% raw %}{% endraw %}{% if rock.rock_type == 'Sedimentary Rock' %}selected{% endif %}>Sedimentary Rock</option>
+                <option value="Metamorphic Rock" {% raw %}{% endraw %}{% if rock.rock_type == 'Metamorphic Rock' %}selected{% endif %}>Metamorphic Rock</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea class="form-control" id="description" name="description" rows="4" 
+                      placeholder="Description">{{ rock.description or '' }}</textarea>
+        </div>
+        <div class="mb-3">
+            <label for="formation" class="form-label">Formation (Rock Formation)</label>
+            <input type="text" class="form-control" id="formation" name="formation" 
+                   value="{{ rock.formation or '' }}" placeholder="Formation (Rock Formation)">
+        </div>
+    </div>
+    
+    <!-- Location Information -->
+    <div class="form-card">
+        <h2>Location Information</h2>
+        <div class="mb-3">
+            <label for="location_name" class="form-label">Location (City/Municipality) *</label>
+            <input type="text" class="form-control" id="location_name" name="location_name" 
+                   value="{{ rock.location_name or '' }}" placeholder="Location (City/Municipality)" required>
+        </div>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="latitude" class="form-label">Latitude</label>
+                <input type="number" step="any" class="form-control" id="latitude" name="latitude" 
+                       value="{{ rock.latitude or '' }}" placeholder="Latitude">
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="longitude" class="form-label">Longitude</label>
+                <input type="number" step="any" class="form-control" id="longitude" name="longitude" 
+                       value="{{ rock.longitude or '' }}" placeholder="Longitude">
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="outcrop_id" class="form-label">Outcrop ID</label>
+            <input type="text" class="form-control" id="outcrop_id" name="outcrop_id" 
+                   value="{{ rock.outcrop_id or '' }}" placeholder="Outcrop ID">
+        </div>
+    </div>
+                                
+    <!-- Sample Images -->
+    <div class="form-card">
+        <h2>Update Sample Image</h2>
+        <div class="mb-3">
+            <label for="rock_specimen" class="form-label">Upload New Sample Image</label>
+            {% for image in images %}
+                {% if image.image_type == 'rock_specimen' %}
+                <div class="mb-3">
+                    <label class="form-label">Current Sample Image:</label>
+                    <div class="text-center">
+                        <img src="{{ url_for('serve_image', image_id=image.image_id) }}" 
+                             class="current-image" alt="Current Sample Image">
+                        <p class="text-muted mt-2">{{ image.file_name }}</p>
+                    </div>
+                </div>
+                {% endif %}
+            {% endfor %}
+            <div class="image-upload-area" onclick="document.getElementById('rock_specimen').click()">
+                <i class="bi bi-cloud-upload display-4 text-muted"></i>
+                <p class="mt-3 mb-0">Click to upload new sample image</p>
+                <small class="text-muted">Supported formats: JPG, PNG, GIF</small>
+            </div>
+            <input type="file" class="form-control d-none" id="rock_specimen" name="rock_specimen" 
+                   accept="image/*" onchange="previewImage(this, 'samplePreview')">
+            <div id="samplePreview" class="mt-3"></div>
+        </div>
+    </div>
+    
+    <!-- Outcrop Image -->
+    <div class="form-card">
+        <h2>Update Outcrop Image</h2>
+        <div class="mb-3">
+            <label for="outcrop_image" class="form-label">Upload New Outcrop Image</label>
+            {% for image in images %}
+                {% if image.image_type == 'outcrop' %}
+                <div class="mb-3">
+                    <label class="form-label">Current Outcrop Image:</label>
+                    <div class="text-center">
+                        <img src="{{ url_for('serve_image', image_id=image.image_id) }}" 
+                             class="current-image" alt="Current Outcrop Image">
+                        <p class="text-muted mt-2">{{ image.file_name }}</p>
+                    </div>
+                </div>
+                {% endif %}
+            {% endfor %}
+            <div class="image-upload-area" onclick="document.getElementById('outcrop_image').click()">
+                <i class="bi bi-cloud-upload display-4 text-muted"></i>
+                <p class="mt-3 mb-0">Click to upload new outcrop image</p>
+                <small class="text-muted">Supported formats: JPG, PNG, GIF</small>
+            </div>
+            <input type="file" class="form-control d-none" id="outcrop_image" name="outcrop_image" 
+                   accept="image/*" onchange="previewImage(this, 'outcropPreview')">
+            <div id="outcropPreview" class="mt-3"></div>
+        </div>
+    </div>
+                        
+                        <!-- Submit Button -->
+    <div class="text-center">
+        <a href="{{ url_for('student_pending_verifications') }}" class="btn btn-secondary me-2">
+            <i class="bi bi-x-circle me-2"></i>Cancel
+        </a>
+        <button type="submit" class="btn-submit">
+            <i class="bi bi-check-circle-fill me-2"></i>Update Rock Sample
+                            </button>
+                        </div>
+                    </form>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function previewImage(input, previewId) {
+    const preview = document.getElementById(previewId);
+    preview.innerHTML = '';
+    
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.className = 'image-preview';
+            img.alt = 'Preview';
+            img.style.maxWidth = '300px';
+            img.style.maxHeight = '300px';
+            img.style.borderRadius = '8px';
+            img.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
+            preview.appendChild(img);
+        }
+        
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+// Form validation
+document.querySelector('form').addEventListener('submit', function(e) {
+    const latitude = document.getElementById('latitude').value;
+    const longitude = document.getElementById('longitude').value;
+    
+    // Validate required fields
+    const rockIndex = document.getElementById('rock_index').value;
+    const rockId = document.getElementById('rock_id').value;
+    const rockType = document.getElementById('rock_type').value;
+    const locationName = document.getElementById('location_name').value;
+    
+    if (!rockIndex || !rockId || !rockType || !locationName) {
+        e.preventDefault();
+        alert('Please fill in all required fields (marked with *)');
+        return false;
+    }
+    
+    // Validate coordinates if provided
+    if (latitude && (parseFloat(latitude) < -90 || parseFloat(latitude) > 90)) {
+        e.preventDefault();
+        alert('Latitude must be between -90 and 90');
+        return false;
+    }
+    
+    if (longitude && (parseFloat(longitude) < -180 || parseFloat(longitude) > 180)) {
+        e.preventDefault();
+        alert('Longitude must be between -180 and 180');
+        return false;
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,256 @@
+{% extends "personnel_base.html" %}
+
+{% block title %}Activity Logs - Personnel Dashboard{% endblock %}
+
+{% block page_styles %}
+<style>
+/* Compact page header */
+.page-header {
+    background: #8B0000;
+    color: white;
+    padding: 1rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 8px rgba(139, 0, 0, 0.2);
+}
+
+.page-header h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.page-header p {
+    font-size: 0.9rem;
+    margin: 0;
+    opacity: 0.9;
+}
+
+/* Compact filters section */
+.filters-section {
+    background: white;
+    border-radius: 6px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.filters-section h3 {
+    color: #8B0000;
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+}
+
+.form-label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.form-control,
+.form-select {
+    font-size: 0.9rem;
+    padding: 0.5rem 0.75rem;
+}
+
+.btn-filter {
+    background: #8B0000;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+.btn-filter:hover {
+    background: #700000;
+    color: white;
+}
+
+/* export button removed */
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    text-decoration: none;
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
+    color: white;
+}
+
+/* Compact logs table container */
+.logs-table-container {
+    background: white;
+    border-radius: 6px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.logs-table {
+    font-size: 0.9rem;
+}
+
+.logs-table thead {
+    background: #8B0000;
+    color: white;
+}
+
+.logs-table th {
+    padding: 0.75rem 0.5rem;
+    font-size: 0.85rem;
+    text-align: center;
+}
+
+.logs-table td {
+    padding: 0.75rem 0.5rem;
+    font-size: 0.85rem;
+    text-align: center;
+}
+
+
+.no-logs {
+    padding: 2rem 1rem;
+    text-align: center;
+}
+
+.no-logs i {
+    font-size: 2rem;
+    color: #6c757d;
+}
+
+.no-logs h5 {
+    color: #6c757d;
+    margin-top: 1rem;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .page-header h1 {
+        font-size: 1.25rem;
+    }
+    
+    .page-header p {
+        font-size: 0.8rem;
+    }
+    
+    .filters-section {
+        padding: 0.75rem;
+    }
+    
+    .filters-section h3 {
+        font-size: 1rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .form-control,
+    .form-select {
+        padding: 0.4rem 0.6rem;
+        font-size: 0.85rem;
+    }
+    
+    .btn-filter,
+    .btn-secondary {
+        padding: 0.4rem 0.75rem;
+        font-size: 0.85rem;
+    }
+    
+    .logs-table th,
+    .logs-table td {
+        padding: 0.5rem 0.25rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-header h1 {
+        font-size: 1.1rem;
+    }
+    
+    .filters-section {
+        padding: 0.5rem;
+    }
+    
+    .logs-table {
+        font-size: 0.8rem;
+    }
+    
+    .logs-table th,
+    .logs-table td {
+        padding: 0.4rem 0.2rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <h1><i class="bi bi-clock-history me-2"></i>Activity Logs</h1>
+    <p>View system activity and verification history</p>
+</div>
+
+<!-- Filters Section -->
+<div class="filters-section">
+    <h3>Filter Logs</h3>
+    <form method="GET" action="{{ url_for('personnel_activity_logs') }}" class="row g-3">
+        <div class="col-md-6">
+            <label for="date_from" class="form-label">From Date</label>
+            <input type="date" class="form-control" id="date_from" name="date_from" value="{{ date_from or '' }}">
+        </div>
+        <div class="col-md-6">
+            <label for="date_to" class="form-label">To Date</label>
+            <input type="date" class="form-control" id="date_to" name="date_to" value="{{ date_to or '' }}">
+        </div>
+        <div class="col-12">
+            <button type="submit" class="btn btn-filter">
+                <i class="bi bi-funnel-fill me-1"></i>Apply Filters
+            </button>
+            <a href="{{ url_for('personnel_activity_logs') }}" class="btn btn-secondary ms-2">
+                <i class="bi bi-x-circle me-1"></i>Clear Filters
+            </a>
+            
+        </div>
+    </form>
+</div>
+
+<!-- Logs Table -->
+<div class="logs-table-container">
+    <div class="table-responsive">
+        <table class="logs-table table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>Rock ID</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if logs %}
+                    {% for log in logs %}
+                    <tr>
+                        <td>{{ log.timestamp.strftime('%Y-%m-%d %H:%M:%S') if log.timestamp else '' }}</td>
+                        <td>{{ log.rock_id }}</td>
+                        <td>{{ log.description }}</td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="3" class="no-logs">
+                            <i class="bi bi-inbox"></i>
+                            <h5>No activity logs found</h5>
+                        </td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}{% endblock %}

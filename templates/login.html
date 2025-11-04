@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Web-GIS Geological Specimen Collection</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .left-panel {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .left-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(255, 0, 0, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 0, 0, 0.1) 0%, transparent 50%),
+                linear-gradient(45deg, transparent 40%, rgba(255, 0, 0, 0.05) 50%, transparent 60%);
+            z-index: 1;
+        }
+        
+        .left-panel .content {
+            position: relative;
+            z-index: 2;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 2rem;
+        }
+        
+        .logo-circle {
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
+        }
+        
+        .main-title {
+            color: white;
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+        
+        .description {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1rem;
+            line-height: 1.6;
+            max-width: 500px;
+        }
+        
+        .right-panel {
+            background: white;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 2rem;
+        }
+        
+        .login-header {
+            position: relative;
+            margin-bottom: 2rem;
+            min-height: 120px;
+        }
+        
+        .login-title {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 60px 0 0 0;
+        }
+        
+        .university-logo {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            width: clamp(90px, 12vw, 170px);
+            height: clamp(90px, 12vw, 170px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+        
+        .form-floating {
+            margin-bottom: 1rem;
+        }
+        
+        .form-control {
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 1rem 0.75rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus {
+            border-color: #dc3545;
+            box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #6c757d;
+            cursor: pointer;
+            z-index: 10;
+        }
+        
+        .password-field {
+            position: relative;
+        }
+        
+        .forgot-password {
+            color: #dc3545;
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+            display: inline-block;
+        }
+        
+        .forgot-password:hover {
+            color: #c82333;
+            text-decoration: underline;
+        }
+        
+        .organization-section {
+            margin-bottom: 1.5rem;
+        }
+        
+        .organization-label {
+            color: #2c3e50;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+        
+        .organization-row {
+            display: flex;
+            gap: 1rem;
+            align-items: end;
+        }
+        
+        .organization-select {
+            flex: 1;
+        }
+        
+        .btn-login {
+            background: #8B0000; /* solid theme color */
+            border: none;
+            color: white;
+            padding: 0.75rem 2rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1rem;
+            box-shadow: none;
+        }
+        
+        .btn-login:hover {
+            background: #8B0000; /* no hover change */
+            transform: none;
+            box-shadow: none;
+            color: white;
+        }
+        
+        .signup-links {
+            margin-top: 2rem;
+        }
+        
+        .signup-link {
+            color: #dc3545;
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        
+        .signup-link:hover {
+            color: #c82333;
+            text-decoration: underline;
+        }
+        
+        
+        
+        @media (max-width: 768px) {
+            .left-panel {
+                display: none;
+            }
+            
+            .right-panel {
+                width: 100%;
+                padding: 1rem;
+            }
+            
+            .main-title {
+                font-size: 2rem;
+            }
+            
+            .login-title {
+                font-size: 2rem;
+            }
+            
+            .university-logo {
+                width: clamp(60px, 15vw, 100px);
+                height: clamp(60px, 15vw, 100px);
+            }
+            
+            .login-header {
+                min-height: 80px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .university-logo {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .login-header {
+                min-height: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid p-0 h-100">
+        <div class="row g-0 h-100">
+            <!-- Left Panel - Promotional Content -->
+            <div class="col-lg-6 left-panel">
+                <div class="content">
+                    <div class="logo-circle">
+                        <i class="bi bi-geo-alt-fill text-dark" style="font-size: 1.5rem;"></i>
+                    </div>
+                    <h1 class="main-title">Explore Geological Samples Digitally</h1>
+                    <p class="description">
+                        Access an organized and searchable rock specimen database built for fieldwork and research by CSU Geology students and faculty.
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Right Panel - Login Form -->
+            <div class="col-lg-6 right-panel">
+                <div class="login-header">
+                    <h2 class="login-title">LOG IN</h2>
+                    <div class="university-logo">
+                        <img src="{{ url_for('static', filename='photos/logo.png') }}" alt="CSU Logo" style="width: 100%; height: 100%; object-fit: contain;">
+                    </div>
+                </div>
+                
+                <!-- Flash Messages -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                
+                <form method="post" action="{{ url_for('login') }}">
+                    <!-- Username/Email Field -->
+                    <div class="form-floating">
+                        <input type="text" class="form-control" id="email" name="email" placeholder="Email" required>
+                        <label for="email">Email Address</label>
+                    </div>
+                    
+                    <!-- Password Field -->
+                    <div class="password-field">
+                        <div class="form-floating">
+                            <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
+                            <label for="password">Your password</label>
+                            <button type="button" class="password-toggle" onclick="togglePassword()">
+                                <i class="bi bi-eye" id="toggleIcon"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Forgot Password Link -->
+                    <a href="#" class="forgot-password">Forget your password?</a>
+                    
+                    <!-- Organization Selection -->
+                    <div class="organization-section">
+                        <div class="organization-label">ROLE:</div>
+                        <div class="organization-row">
+                            <div class="organization-select">
+                                <select class="form-select" name="organization" id="organization">
+                                    <option value="student">Student</option>
+                                    <option value="admin">Admin</option>
+                                    <option value="personnel">Personnel</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-login">Login</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Sign Up Links -->
+                    <div class="signup-links">
+                        <a href="{{ url_for('signup') }}" class="signup-link" data-org="student">Don't have an account? Sign up</a>
+                        <a href="{{ url_for('signup') }}" class="signup-link" data-org="admin">Don't have an account? Sign up</a>
+                        <a href="{{ url_for('signup') }}" class="signup-link" data-org="personnel">Don't have an account? Sign up</a>
+                    </div>
+                </form>
+                
+                
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Toggle password visibility
+        function togglePassword() {
+            const passwordField = document.getElementById('password');
+            const toggleIcon = document.getElementById('toggleIcon');
+            
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                toggleIcon.className = 'bi bi-eye-slash';
+            } else {
+                passwordField.type = 'password';
+                toggleIcon.className = 'bi bi-eye';
+            }
+        }
+        
+        
+        
+        // Update sign up links based on organization selection
+        document.getElementById('organization').addEventListener('change', function() {
+            const selectedOrg = this.value;
+            const signupLinks = document.querySelectorAll('.signup-link');
+            
+            signupLinks.forEach(link => {
+                if (link.dataset.org === selectedOrg) {
+                    link.style.display = 'block';
+                    link.style.fontWeight = '600';
+                } else {
+                    link.style.display = 'none';
+                    link.style.fontWeight = 'normal';
+                }
+            });
+        });
+        
+        // Initialize sign up links visibility
+        document.getElementById('organization').dispatchEvent(new Event('change'));
+    </script>
+</body>
+</html>

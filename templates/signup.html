@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account - Web-GIS Geological Specimen Collection</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .left-panel {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .left-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(255, 0, 0, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 0, 0, 0.1) 0%, transparent 50%),
+                linear-gradient(45deg, transparent 40%, rgba(255, 0, 0, 0.05) 50%, transparent 60%);
+            z-index: 1;
+        }
+        
+        .left-panel .content {
+            position: relative;
+            z-index: 2;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 2rem;
+        }
+        
+        .quote-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(135, 206, 250, 0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 15px rgba(135, 206, 250, 0.3);
+        }
+        
+        .quote-text {
+            color: white;
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            line-height: 1.3;
+            font-style: italic;
+        }
+        
+        .quote-attribution {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 3rem;
+        }
+        
+        .bottom-logo {
+            position: absolute;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
+        }
+        
+        .right-panel {
+            background: white;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+        
+        .back-link {
+            color: #6c757d;
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: color 0.3s ease;
+        }
+        
+        .back-link:hover {
+            color: #495057;
+            text-decoration: none;
+        }
+        
+        .signup-title {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .signup-description {
+            color: #6c757d;
+            font-size: 1rem;
+            margin-bottom: 2rem;
+            line-height: 1.5;
+        }
+        
+        .form-floating {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-control {
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 1rem 0.75rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus {
+            border-color: #dc3545;
+            box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #6c757d;
+            cursor: pointer;
+            z-index: 10;
+        }
+        
+        .password-field {
+            position: relative;
+        }
+        
+        
+        
+        .btn-register {
+            background: #8B0000; /* solid theme color */
+            border: none;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            width: 100%;
+            margin-bottom: 1.5rem;
+            box-shadow: none;
+        }
+        
+        .btn-register:hover {
+            background: #8B0000; /* no hover change */
+            transform: none;
+            box-shadow: none;
+            color: white;
+        }
+        
+        .btn-register:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        
+        
+        .form-error {
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            display: none;
+        }
+        
+        .form-control.is-invalid {
+            border-color: #dc3545;
+        }
+        
+        .form-control.is-valid {
+            border-color: #28a745;
+        }
+        
+        @media (max-width: 768px) {
+            .left-panel {
+                display: none;
+            }
+            
+            .right-panel {
+                width: 100%;
+                padding: 1rem;
+            }
+            
+            .signup-title {
+                font-size: 2rem;
+            }
+            
+            .quote-text {
+                font-size: 2rem;
+            }
+        }
+        
+        @media (max-height: 600px) {
+            .right-panel {
+                padding: 1rem;
+            }
+            
+            .signup-title {
+                font-size: 2rem;
+                margin-bottom: 0.5rem;
+            }
+            
+            .signup-description {
+                margin-bottom: 1rem;
+            }
+            
+            .form-floating {
+                margin-bottom: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid p-0 h-100">
+        <div class="row g-0 h-100">
+            <!-- Left Panel - Promotional Content -->
+            <div class="col-lg-6 left-panel">
+                <div class="content">
+                    <h2 class="quote-text">
+                        "A smarter way to log and locate geological specimens. Tailored for the fieldwork and research needs of Caraga State University."
+                    </h2>
+                    <p class="quote-attribution">— Department of Geology</p>
+                    
+                </div>
+            </div>
+            
+            <!-- Right Panel - Signup Form -->
+            <div class="col-lg-6 right-panel">
+                <!-- Flash Messages (moved to top) -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <a href="{{ url_for('login') }}" class="back-link">
+                    <i class="bi bi-arrow-left"></i>
+                    Back
+                </a>
+                
+                <h1 class="signup-title">Create Your Rock Sample Index Account</h1>
+                <p class="signup-description">
+                    Access digital geological catalogs and tools for efficient fieldwork and research.
+                </p>
+                
+                <form method="post" action="{{ url_for('signup') }}" id="signupForm" novalidate>
+                    
+                    
+                    <!-- Full Name Field -->
+                    <div class="form-floating">
+                        <input type="text" class="form-control" id="fullname" name="fullname" placeholder="Full Name (Student/Faculty)" required>
+                        <label for="fullname">Your fullname *</label>
+                        <div class="form-error" id="fullname-error"></div>
+                    </div>
+
+                    <!-- Student ID Field -->
+                    <div class="form-floating">
+                        <input type="text" class="form-control" id="student_id" name="student_id" placeholder="Student ID" required>
+                        <label for="student_id">Student ID *</label>
+                        <div class="form-error" id="student_id-error"></div>
+                    </div>
+                    
+                    <!-- Email Field -->
+                    <div class="form-floating">
+                        <input type="email" class="form-control" id="email" name="email" placeholder="CSU Email Address" required>
+                        <label for="email">Email address *</label>
+                        <div class="form-error" id="email-error"></div>
+                    </div>
+
+                    
+                    
+                    <!-- Password Field -->
+                    <div class="password-field">
+                        <div class="form-floating">
+                            <input type="password" class="form-control" id="password" name="password" placeholder="Create Secure Password" required>
+                            <label for="password">Create password *</label>
+                            <button type="button" class="password-toggle" onclick="togglePassword()">
+                                <i class="bi bi-eye" id="toggleIcon"></i>
+                            </button>
+                        </div>
+                        <div class="form-error" id="password-error"></div>
+                    </div>
+                    
+                    <!-- Confirm Password Field -->
+                    <div class="password-field">
+                        <div class="form-floating">
+                            <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" placeholder="Confirm Password" required>
+                            <label for="confirmPassword">Confirm password *</label>
+                            <button type="button" class="password-toggle" onclick="toggleConfirmPassword()">
+                                <i class="bi bi-eye" id="toggleConfirmIcon"></i>
+                            </button>
+                        </div>
+                        <div class="form-error" id="confirmPassword-error"></div>
+                    </div>
+                    
+                    
+                    
+                    <!-- Register Button -->
+                    <button type="submit" class="btn btn-register" id="registerBtn">
+                        Register Account
+                    </button>
+                    
+                    
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Toggle password visibility
+        function togglePassword() {
+            const passwordField = document.getElementById('password');
+            const toggleIcon = document.getElementById('toggleIcon');
+            
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                toggleIcon.className = 'bi bi-eye-slash';
+            } else {
+                passwordField.type = 'password';
+                toggleIcon.className = 'bi bi-eye';
+            }
+        }
+        
+        // Toggle confirm password visibility
+        function toggleConfirmPassword() {
+            const passwordField = document.getElementById('confirmPassword');
+            const toggleIcon = document.getElementById('toggleConfirmIcon');
+            
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                toggleIcon.className = 'bi bi-eye-slash';
+            } else {
+                passwordField.type = 'password';
+                toggleIcon.className = 'bi bi-eye';
+            }
+        }
+        
+        
+
+        // OTP functionality removed - not needed for current backend implementation
+        
+        // Form validation
+        function validateForm() {
+            let isValid = true;
+            
+            // Clear previous errors
+            document.querySelectorAll('.form-error').forEach(error => {
+                error.style.display = 'none';
+                error.textContent = '';
+            });
+            
+            document.querySelectorAll('.form-control').forEach(field => {
+                field.classList.remove('is-invalid', 'is-valid');
+            });
+            
+            // Validate full name
+            const fullname = document.getElementById('fullname');
+            if (!fullname.value.trim()) {
+                showError('fullname', 'Full name is required');
+                isValid = false;
+            } else if (fullname.value.trim().length < 2) {
+                showError('fullname', 'Full name must be at least 2 characters');
+                isValid = false;
+            } else {
+                fullname.classList.add('is-valid');
+            }
+
+            // Validate student id
+            const studentId = document.getElementById('student_id');
+            if (!studentId.value.trim()) {
+                showError('student_id', 'Student ID is required');
+                isValid = false;
+            } else {
+                studentId.classList.add('is-valid');
+            }
+            
+            // Validate email
+            const email = document.getElementById('email');
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!email.value.trim()) {
+                showError('email', 'Email address is required');
+                isValid = false;
+            } else if (!emailRegex.test(email.value)) {
+                showError('email', 'Please enter a valid email address');
+                isValid = false;
+            } else {
+                email.classList.add('is-valid');
+            }
+            
+            // Validate password
+            const password = document.getElementById('password');
+            if (!password.value) {
+                showError('password', 'Password is required');
+                isValid = false;
+            } else if (password.value.length < 8) {
+                showError('password', 'Password must be at least 8 characters');
+                isValid = false;
+            } else {
+                password.classList.add('is-valid');
+            }
+            
+            // Validate confirm password
+            const confirmPassword = document.getElementById('confirmPassword');
+            if (!confirmPassword.value) {
+                showError('confirmPassword', 'Please confirm your password');
+                isValid = false;
+            } else if (confirmPassword.value !== password.value) {
+                showError('confirmPassword', 'Passwords do not match');
+                isValid = false;
+            } else {
+                confirmPassword.classList.add('is-valid');
+            }
+
+            // OTP validation removed - not needed for current backend
+            
+            
+            return isValid;
+        }
+        
+        function showError(fieldId, message) {
+            const field = document.getElementById(fieldId);
+            const errorElement = document.getElementById(fieldId + '-error');
+            
+            field.classList.add('is-invalid');
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+        }
+        
+        // Form submission
+        document.getElementById('signupForm').addEventListener('submit', function(e) {
+            if (!validateForm()) {
+                e.preventDefault();
+            }
+        });
+        
+        // Real-time validation
+        document.querySelectorAll('input[required]').forEach(input => {
+            input.addEventListener('blur', function() {
+                if (this.type === 'email') {
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (this.value && !emailRegex.test(this.value)) {
+                        showError(this.id, 'Please enter a valid email address');
+                    } else if (this.value) {
+                        this.classList.remove('is-invalid');
+                        this.classList.add('is-valid');
+                        document.getElementById(this.id + '-error').style.display = 'none';
+                    }
+                } else if (this.id === 'confirmPassword') {
+                    const password = document.getElementById('password');
+                    if (this.value && this.value !== password.value) {
+                        showError(this.id, 'Passwords do not match');
+                    } else if (this.value) {
+                        this.classList.remove('is-invalid');
+                        this.classList.add('is-valid');
+                        document.getElementById(this.id + '-error').style.display = 'none';
+                    }
+                } else if (this.value.trim()) {
+                    this.classList.remove('is-invalid');
+                    this.classList.add('is-valid');
+                    document.getElementById(this.id + '-error').style.display = 'none';
+                }
+            });
+        });
+        
+        // Password confirmation real-time validation
+        document.getElementById('confirmPassword').addEventListener('input', function() {
+            const password = document.getElementById('password');
+            if (this.value && password.value && this.value !== password.value) {
+                showError(this.id, 'Passwords do not match');
+            } else if (this.value && password.value && this.value === password.value) {
+                this.classList.remove('is-invalid');
+                this.classList.add('is-valid');
+                document.getElementById(this.id + '-error').style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

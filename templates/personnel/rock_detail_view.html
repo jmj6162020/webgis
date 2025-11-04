@@ -1,0 +1,662 @@
+{% extends "personnel_base.html" %}
+
+{% block title %}Rock Sample Details - Personnel Dashboard{% endblock %}
+
+{% block page_styles %}
+<style>
+/* Compact page header */
+.page-header {
+    background: #8B0000;
+    color: white;
+    padding: 1rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 8px rgba(139, 0, 0, 0.2);
+}
+
+.page-header h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.page-header p {
+    font-size: 0.9rem;
+    margin: 0;
+    opacity: 0.9;
+}
+
+.status-badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.status-pending {
+    background: #ffc107;
+    color: #000;
+}
+
+.status-verified {
+    background: #28a745;
+    color: white;
+}
+
+.status-rejected {
+    background: #dc3545;
+    color: white;
+}
+
+/* Compact info card */
+.info-card {
+    background: white;
+    border-radius: 6px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.info-card h2 {
+    color: #8B0000;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #8B0000;
+}
+
+.info-label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 0.25rem;
+}
+
+.info-value {
+    font-size: 0.9rem;
+    color: #333;
+    margin-bottom: 0.75rem;
+}
+
+.image-container {
+    max-width: 100%;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 0.5rem;
+}
+
+.image-container img {
+    width: 100%;
+    height: auto;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.image-container img:hover {
+    transform: scale(1.02);
+}
+
+/* Approval Timeline Styles */
+.approval-timeline {
+    position: relative;
+    padding-left: 2rem;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 1.5rem;
+    padding-left: 1rem;
+}
+
+.timeline-item:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    left: -0.5rem;
+    top: 1.5rem;
+    bottom: -1.5rem;
+    width: 2px;
+    background: #dee2e6;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -1.5rem;
+    top: 0.25rem;
+    width: 1rem;
+    height: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    border-radius: 50%;
+}
+
+.timeline-content {
+    background: #f8f9fa;
+    padding: 0.75rem;
+    border-radius: 6px;
+    border-left: 3px solid #8B0000;
+}
+
+.timeline-header {
+    display: flex;
+    justify-content: between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.timeline-date {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-left: auto;
+}
+
+.timeline-body {
+    font-size: 0.9rem;
+}
+
+.timeline-body p {
+    margin-bottom: 0.25rem;
+}
+
+/* Compact action buttons */
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.btn-primary-custom {
+    background: #8B0000;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+}
+
+.btn-primary-custom:hover {
+    background: #700000;
+    color: white;
+}
+
+.btn-secondary-custom {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+}
+
+.btn-secondary-custom:hover {
+    background: #5a6268;
+    color: white;
+}
+
+.btn-danger-custom {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+}
+
+.btn-danger-custom:hover {
+    background: #c82333;
+    color: white;
+}
+
+.no-images {
+    text-align: center;
+    padding: 2rem 1rem;
+}
+
+.no-images i {
+    font-size: 2rem;
+    color: #dee2e6;
+}
+
+.no-images p {
+    color: #6c757d;
+    margin-top: 1rem;
+}
+
+.not-found {
+    text-align: center;
+    padding: 2rem 1rem;
+}
+
+.not-found i {
+    font-size: 3rem;
+    color: #ffc107;
+}
+
+.not-found h3 {
+    color: #8B0000;
+    margin-top: 1rem;
+}
+
+.not-found p {
+    color: #6c757d;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .page-header h1 {
+        font-size: 1.25rem;
+    }
+    
+    .page-header p {
+        font-size: 0.8rem;
+    }
+    
+    .info-card {
+        padding: 0.75rem;
+    }
+    
+    .info-card h2 {
+        font-size: 1rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .info-label {
+        font-size: 0.85rem;
+    }
+    
+    .info-value {
+        font-size: 0.85rem;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+    }
+    
+    .action-buttons > * {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .btn-primary-custom,
+    .btn-secondary-custom,
+    .btn-danger-custom {
+        padding: 0.4rem 0.75rem;
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-header h1 {
+        font-size: 1.1rem;
+    }
+    
+    .info-card {
+        padding: 0.5rem;
+    }
+    
+    .info-card h2 {
+        font-size: 0.95rem;
+    }
+    
+    .info-label,
+    .info-value {
+        font-size: 0.8rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+{% if rock %}
+<!-- Page Header -->
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1><i class="bi bi-info-circle-fill me-2"></i>Rock Sample Details</h1>
+            <p class="mb-0">Complete information about sample {{ rock.rock_id }}</p>
+        </div>
+        <span class="status-badge status-{{ rock.status }}">
+            <i class="bi bi-{% if rock.status == 'verified' %}check-circle-fill{% elif rock.status == 'pending' %}clock-fill{% else %}x-circle-fill{% endif %} me-1"></i>
+            {{ rock.status.upper() }}
+        </span>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Left Column -->
+    <div class="col-lg-6">
+        <!-- Sample Information -->
+        <div class="info-card">
+            <h2><i class="bi bi-gem me-2"></i>Sample Information</h2>
+            <div class="row">
+                <div class="col-6 mb-3">
+                    <div class="info-label">Sample Index</div>
+                    <div class="info-value"><strong>{{ rock.rock_index or 'N/A' }}</strong></div>
+                </div>
+                <div class="col-6 mb-3">
+                    <div class="info-label">Rock ID</div>
+                    <div class="info-value"><strong>{{ rock.rock_id or 'N/A' }}</strong></div>
+                </div>
+            </div>
+            <div class="mb-3">
+                <div class="info-label">Rock Type</div>
+                <div class="info-value">{{ rock.rock_type }}</div>
+            </div>
+            <div class="mb-3">
+                <div class="info-label">Description</div>
+                <div class="info-value">{{ rock.description or 'No description provided' }}</div>
+            </div>
+            <div>
+                <div class="info-label">Formation (Rock Formation)</div>
+                <div class="info-value">{{ rock.formation or 'N/A' }}</div>
+            </div>
+            <div class="mb-3">
+                <div class="info-label">Sample Status</div>
+                <div class="info-value">
+                    <span class="status-badge status-{{ rock.status }}">
+                        <i class="bi bi-{% if rock.status == 'verified' %}check-circle-fill{% elif rock.status == 'pending' %}clock-fill{% else %}x-circle-fill{% endif %} me-1"></i>
+                        {{ rock.status.upper() }}
+                    </span>
+                </div>
+            </div>
+            
+        </div>
+
+        <!-- Location Information -->
+        <div class="info-card">
+            <h2><i class="bi bi-geo-alt-fill me-2"></i>Location Information</h2>
+            <div class="mb-3">
+                <div class="info-label">Location (City/Municipality)</div>
+                <div class="info-value">
+                    <i class="bi bi-pin-map-fill me-1" style="color: #8B0000;"></i>
+                    {{ rock.location_name }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6 mb-3">
+                    <div class="info-label">Latitude</div>
+                    <div class="info-value">{{ rock.latitude or 'N/A' }}</div>
+                </div>
+                <div class="col-6 mb-3">
+                    <div class="info-label">Longitude</div>
+                    <div class="info-value">{{ rock.longitude or 'N/A' }}</div>
+                </div>
+            </div>
+            <div>
+                <div class="info-label">Outcrop ID</div>
+                <div class="info-value">{{ rock.outcrop_id or 'N/A' }}</div>
+            </div>
+            <div class="mb-3">
+                <div class="info-label">Coordinates (Decimal Degrees)</div>
+                <div class="info-value">
+                    <i class="bi bi-geo-alt me-1"></i>
+                    {% if rock.latitude and rock.longitude %}
+                        {{ "%.8f"|format(rock.latitude) }}, {{ "%.8f"|format(rock.longitude) }}
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </div>
+            </div>
+            
+        </div>
+
+        <!-- Submission Information (moved to left column) -->
+        <div class="info-card">
+            <h2><i class="bi bi-clock-history me-2"></i>Submission Information</h2>
+            <div class="row">
+                <div class="col-12 mb-3">
+                    <div class="info-label">Submitted On</div>
+                    <div class="info-value">
+                        <i class="bi bi-calendar-event me-1"></i>
+                        {{ rock.created_at.strftime('%B %d, %Y at %I:%M %p') if rock.created_at else 'N/A' }}
+                    </div>
+                </div>
+                <div class="col-12 mb-3">
+                    <div class="info-label">Last Updated</div>
+                    <div class="info-value">
+                        <i class="bi bi-arrow-clockwise me-1"></i>
+                        {{ rock.updated_at.strftime('%B %d, %Y at %I:%M %p') if rock.updated_at else 'N/A' }}
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="info-label">Verified By</div>
+                    <div class="info-value">
+                        {% if rock.verified_by_name %}
+                            <i class="bi bi-person-check-fill me-1 text-success"></i>
+                            {{ rock.verified_by_name }}
+                        {% else %}
+                            <i class="bi bi-hourglass-split me-1 text-warning"></i>
+                            <span class="text-muted">Not yet verified</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-12 mb-3">
+                    <div class="info-label">Submitted By</div>
+                    <div class="info-value">
+                        <i class="bi bi-person-fill me-1"></i>
+                        {{ rock.student_name or 'Unknown' }}
+                    </div>
+                </div>
+                {% if rock.school_id %}
+                <div class="col-12">
+                    <div class="info-label">Student ID</div>
+                    <div class="info-value">
+                        <i class="bi bi-card-text me-1"></i>
+                        {{ rock.school_id }}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column -->
+    <div class="col-lg-6">
+        <!-- Sample Images -->
+        <div class="info-card">
+            <h2><i class="bi bi-image-fill me-2"></i>Sample Images</h2>
+            {% if images %}
+                {% for image in images %}
+                    <div class="mb-3">
+                        <div class="info-label">{{ image.image_type|title|replace('_', ' ') }}</div>
+                        <div class="image-container">
+                            <img src="{{ url_for('serve_image', image_id=image.image_id) }}" 
+                                 alt="{{ image.image_type }}" 
+                                 class="img-fluid"
+                                 onclick="openImageModal(this.src)">
+                        </div>
+                        <small class="text-muted">
+                            {{ image.file_name }} ({{ (image.file_size / 1024)|round(2) }} KB)
+                        </small>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="no-images">
+                    <i class="bi bi-image"></i>
+                    <p>No images uploaded</p>
+                </div>
+            {% endif %}
+        </div>
+
+        
+
+        <!-- Approval History -->
+        {% if approval_history %}
+        <div class="info-card">
+            <h2><i class="bi bi-list-check me-2"></i>Approval History</h2>
+            <div class="approval-timeline">
+                {% for approval in approval_history %}
+                <div class="timeline-item">
+                    <div class="timeline-marker">
+                        <i class="bi bi-{% if approval.action == 'approved' %}check-circle-fill text-success{% elif approval.action == 'rejected' %}x-circle-fill text-danger{% else %}clock-fill text-warning{% endif %}"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <div class="timeline-header">
+                            <strong>{{ approval.action|title }}</strong>
+                            <span class="timeline-date">{{ approval.timestamp.strftime('%B %d, %Y at %I:%M %p') if approval.timestamp else 'N/A' }}</span>
+                        </div>
+                        <div class="timeline-body">
+                            <p class="mb-1">{{ approval.remarks or 'No remarks provided' }}</p>
+                            <small class="text-muted">
+                                <i class="bi bi-person me-1"></i>By {{ approval.user_name or 'System' }}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Personnel Action Buttons -->
+<div class="action-buttons">
+    <a href="{{ url_for('personnel_rock_list') }}" class="btn-secondary-custom">
+        <i class="bi bi-arrow-left me-1"></i>Back to List
+    </a>
+    {% if rock.status == 'pending' %}
+    <button class="btn-primary-custom" data-rock-id="{{ rock.sample_id }}" onclick="verifyRock(this.dataset.rockId)">
+        <i class="bi bi-check-circle-fill me-1"></i>Verify Rock
+    </button>
+    <button class="btn-danger-custom" data-rock-id="{{ rock.sample_id }}" onclick="rejectRock(this.dataset.rockId)">
+        <i class="bi bi-x-circle-fill me-1"></i>Reject Rock
+    </button>
+    {% endif %}
+    <button class="btn-secondary-custom" data-rock-id="{{ rock.sample_id }}" onclick="archiveRock(this.dataset.rockId)">
+        <i class="bi bi-archive-fill me-1"></i>Archive Rock
+    </button>
+</div>
+
+{% else %}
+<div class="info-card">
+    <div class="not-found">
+        <i class="bi bi-exclamation-triangle"></i>
+        <h3>Rock Not Found</h3>
+        <p>The requested rock sample could not be found.</p>
+        <a href="{{ url_for('personnel_rock_list') }}" class="btn-primary-custom mt-3">
+            <i class="bi bi-arrow-left me-1"></i>Back to List
+        </a>
+    </div>
+</div>
+{% endif %}
+
+<!-- Image Modal -->
+<div class="modal fade" id="imageModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Image Preview</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="modalImage" src="" class="img-fluid" alt="Preview">
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function openImageModal(src) {
+    document.getElementById('modalImage').src = src;
+    new bootstrap.Modal(document.getElementById('imageModal')).show();
+}
+
+function verifyRock(rockId) {
+    if (confirm('Are you sure you want to verify this rock?')) {
+        const formData = new FormData();
+        formData.append('action', 'approve');
+        formData.append('remarks', '');
+        
+        fetch(`/personnel/verify-rock/${rockId}`, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (response.ok) {
+                location.reload();
+            } else {
+                alert('Error verifying rock');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error verifying rock');
+        });
+    }
+}
+
+function rejectRock(rockId) {
+    if (confirm('Are you sure you want to reject this rock?')) {
+        const reason = prompt('Please provide a reason for rejection (optional):');
+        
+        const formData = new FormData();
+        formData.append('action', 'reject');
+        formData.append('remarks', reason || '');
+        
+        fetch(`/personnel/verify-rock/${rockId}`, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (response.ok) {
+                window.location.href = "{{ url_for('personnel_rock_list') }}";
+            } else {
+                alert('Error rejecting rock');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error rejecting rock');
+        });
+    }
+}
+
+function archiveRock(rockId) {
+    if (confirm('Are you sure you want to archive this rock?')) {
+        const reason = prompt('Please provide a reason for archiving (optional):');
+        
+        const formData = new FormData();
+        formData.append('reason', reason || '');
+        
+        fetch(`/personnel/archive-rock/${rockId}`, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (response.ok) {
+                window.location.href = "{{ url_for('personnel_archives') }}";
+            } else {
+                alert('Error archiving rock');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error archiving rock');
+        });
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,447 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Interactive Map - Admin Dashboard{% endblock %}
+
+{% block extra_css %}
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+<style>
+    /* Compact page header */
+    .page-header {
+        background: #8B0000;
+        color: white;
+        padding: 1rem;
+        border-radius: 6px;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 8px rgba(139, 0, 0, 0.2);
+    }
+
+    .page-header h1 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .page-header p {
+        font-size: 0.9rem;
+        margin: 0;
+        opacity: 0.9;
+    }
+
+    /* Compact map legend */
+    .map-legend {
+        background: white;
+        padding: 0.75rem;
+        border-radius: 6px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 1rem;
+    }
+
+    .map-legend h5 {
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    /* City selector */
+    .map-controls {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.75rem;
+        background: white;
+        padding: 0.75rem;
+        border-radius: 6px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 1rem;
+    }
+
+    .map-controls .control-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .map-controls select {
+        min-width: 240px;
+        max-width: 100%;
+        padding: 0.4rem 0.6rem;
+        border-radius: 6px;
+        border: 1px solid #dee2e6;
+        background: #fff;
+    }
+
+    .specimen-badge {
+        background: #e6f3ff;
+        color: #004a99;
+        border: 1px solid #b3d7ff;
+        padding: 0.25rem 0.5rem;
+        border-radius: 999px;
+        font-size: 0.85rem;
+        white-space: nowrap;
+    }
+
+    .legend-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.25rem;
+        font-size: 0.85rem;
+    }
+
+    .legend-marker {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        margin-right: 0.5rem;
+        border: 2px solid white;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    }
+
+    .marker-city {
+        background-color: #0066cc;
+    }
+
+    .marker-specimen {
+        background-color: #9933cc;
+    }
+
+    /* Compact map container */
+    .map-container {
+        height: 500px;
+        width: 100%;
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        margin-bottom: 1rem;
+        overflow: hidden;
+        background: #e6f3ff;
+    }
+
+    #map {
+        height: 500px;
+        width: 100%;
+        border-radius: 6px;
+        overflow: hidden;
+        background: #e6f3ff;
+    }
+
+    /* Compact info section */
+    .info-section {
+        background: white;
+        padding: 1rem;
+        border-radius: 6px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .info-section h3 {
+        color: #8B0000;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        font-size: 1.1rem;
+    }
+
+    .info-section ol {
+        margin-bottom: 0;
+        font-size: 0.9rem;
+    }
+
+    .info-section li {
+        margin-bottom: 0.25rem;
+    }
+
+    /* Mobile responsive */
+    @media (max-width: 768px) {
+        .page-header h1 {
+            font-size: 1.25rem;
+        }
+        
+        .page-header p {
+            font-size: 0.8rem;
+        }
+        
+        #map {
+            height: 350px;
+        }
+        
+        .map-container {
+            height: 350px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <h1><i class="bi bi-map-fill me-2"></i>Interactive Map</h1>
+    <p>Monitor all rock sample locations and system activity</p>
+  </div>
+
+<!-- Map Legend -->
+<div class="map-legend">
+    <h5 class="fw-bold mb-2">Map Legend</h5>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="legend-item">
+                <div class="legend-marker marker-city"></div>
+                <span>Cities (Blue Markers) - Click to view all specimens</span>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="legend-item">
+                <div class="legend-marker marker-specimen"></div>
+                <span>Rock Specimens (Purple Markers) - Individual samples</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Compact Controls -->
+<div class="map-controls">
+    <div class="control-item">
+        <label for="city-select" class="form-label mb-0"><strong>City/Municipality:</strong></label>
+        <select id="city-select" aria-label="Select city or municipality"></select>
+    </div>
+    <div class="control-item">
+        <span id="selected-city-name" class="fw-semibold">No city selected</span>
+        <span class="specimen-badge" title="Number of specimens in selected city">
+            <span id="specimen-count">—</span>
+        </span>
+    </div>
+    <div class="ms-auto small text-muted">Tip: Click a blue dot to select a city</div>
+    
+    
+</div>
+
+<!-- Map Container -->
+<div class="map-container">
+    <div id="map"></div>
+</div>
+
+<!-- Navigation Info -->
+<div class="info-section">
+    <h3>Three-Level Navigation</h3>
+    <ol>
+        <li><strong>City Overview:</strong> Shows all cities with specimen counts</li>
+        <li><strong>Rock List:</strong> Displays specimens within a selected city</li>
+        <li><strong>Specimen Details:</strong> Shows detailed information about individual rocks</li>
+    </ol>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<!-- Map Data (inlined as JSON to avoid template syntax in JS) -->
+<script id="map-data" type="application/json">{"cities": {{ cities | tojson }}, "rocks": {{ rocks | tojson }}}</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Data from server (parse from JSON script to keep JS lint-friendly)
+        const rawDataEl = document.getElementById('map-data');
+        const parsed = rawDataEl ? JSON.parse(rawDataEl.textContent) : { cities: [], rocks: [] };
+        const citiesData = Array.isArray(parsed.cities) ? parsed.cities : [];
+        const rocksData = Array.isArray(parsed.rocks) ? parsed.rocks : [];
+
+        // Map and layers
+        let map;
+        const cityLayer = L.layerGroup();
+        const specimenLayer = L.layerGroup();
+        let currentCityName = null;
+        const cityNameToData = new Map(citiesData.map(c => [c.location_name, c]));
+        
+        function initializeMap() {
+            console.log('Starting OpenStreetMap test...');
+            
+            // Check if map element exists
+            const mapElement = document.getElementById('map');
+            if (!mapElement) {
+                console.error('Map element not found!');
+                return;
+            }
+            
+            try {
+                // Remove existing map if it exists
+                if (map) {
+                    map.remove();
+                }
+                
+                // Create new map
+                map = L.map('map', {
+                    center: [8.9475, 125.5406],
+                    zoom: 13,
+                    zoomControl: true,
+                    scrollWheelZoom: true,
+                    dragging: true
+                });
+                
+                console.log('Map object created');
+    
+                // Base tiles
+                const tileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors | <a href="https://tracestrack.com/">TraceTrack Topo</a>'
+                });
+                
+                tileLayer.addTo(map);
+                console.log('TraceTrack Topo tiles added');
+
+                // Add layers
+                cityLayer.addTo(map);
+                specimenLayer.addTo(map);
+                renderCities();
+                populateCityDropdown();
+                
+                // Add event listeners
+                tileLayer.on('loading', () => {
+                    console.log('Tiles loading...');
+                });
+                
+                tileLayer.on('load', () => {
+                    console.log('Tiles loaded successfully');
+                });
+                
+                tileLayer.on('tileerror', (e) => {
+                    console.log(`Tile error: ${e.tile.src}`);
+                });
+
+                // Force refresh
+                setTimeout(() => {
+                    map.invalidateSize();
+                    console.log('Map size invalidated');
+                }, 100);
+    
+            } catch (error) {
+                console.log(`Error: ${error.message}`);
+            }
+        }
+
+        function renderCities() {
+            cityLayer.clearLayers();
+            const cityMarkers = [];
+            citiesData.forEach(city => {
+                if (city.avg_lat != null && city.avg_lng != null) {
+                    const marker = L.circleMarker([city.avg_lat, city.avg_lng], {
+                        radius: 6,
+                        color: '#0066cc',
+                        weight: 2,
+                        opacity: 1,
+                        fillColor: '#2b8cff',
+                        fillOpacity: 0.9
+                    })
+                    .bindTooltip(`${city.location_name} • ${city.specimen_count} specimen${city.specimen_count == 1 ? '' : 's'}`, { permanent: false })
+                    .on('click', () => {
+                        onCitySelected(city.location_name);
+                        // sync dropdown selection
+                        const select = document.getElementById('city-select');
+                        if (select) {
+                            select.value = city.location_name;
+                        }
+                    });
+                    marker.addTo(cityLayer);
+                    cityMarkers.push(marker);
+                }
+            });
+
+            // Fit to all cities if available
+            if (cityMarkers.length > 0) {
+                const group = L.featureGroup(cityMarkers);
+                map.fitBounds(group.getBounds().pad(0.2));
+            }
+        }
+
+        function populateCityDropdown() {
+            const container = document.getElementById('city-select');
+            const countBadge = document.getElementById('specimen-count');
+            if (!container) return;
+
+            // Clear
+            container.innerHTML = '';
+            const placeholder = document.createElement('option');
+            placeholder.value = '';
+            placeholder.textContent = 'Select a city/municipality';
+            container.appendChild(placeholder);
+
+            // Sorted list by name
+            citiesData
+                .slice()
+                .sort((a, b) => a.location_name.localeCompare(b.location_name))
+                .forEach(city => {
+                    const opt = document.createElement('option');
+                    opt.value = city.location_name;
+                    opt.textContent = `${city.location_name} (${city.specimen_count})`;
+                    container.appendChild(opt);
+                });
+
+            container.addEventListener('change', (e) => {
+                const name = e.target.value || null;
+                onCitySelected(name);
+            });
+
+            // Initialize badge
+            if (countBadge) {
+                countBadge.textContent = '—';
+            }
+        }
+
+        function onCitySelected(cityName) {
+            currentCityName = cityName;
+            specimenLayer.clearLayers();
+
+            const countBadge = document.getElementById('specimen-count');
+            const titleLabel = document.getElementById('selected-city-name');
+
+            if (!cityName) {
+                if (countBadge) countBadge.textContent = '—';
+                if (titleLabel) titleLabel.textContent = 'No city selected';
+                return;
+            }
+
+            const specimens = rocksData.filter(r => r.location_name === cityName && r.latitude != null && r.longitude != null);
+
+            // Add specimen markers
+            const markers = [];
+            specimens.forEach(s => {
+                const m = L.circleMarker([s.latitude, s.longitude], {
+                    radius: 5,
+                    color: '#6a0dad',
+                    weight: 2,
+                    opacity: 1,
+                    fillColor: '#9933cc',
+                    fillOpacity: 0.85
+                })
+                .bindPopup(
+                    `<strong>${s.rock_type || 'Specimen'}</strong>` +
+                    `<br/>Rock ID: ${s.rock_id || s.sample_id}` +
+                    `<br/>Status: ${s.status || '—'}` +
+                    `<br/>Location: ${s.location_name || 'Unknown'}` +
+                    `${s.created_at ? `<br/>Date: ${new Date(s.created_at).toLocaleString()}` : ''}` +
+                    `<br/><a href="/admin/rock-detail/${s.sample_id}" class="link-primary">View details</a>`
+                );
+                m.addTo(specimenLayer);
+                markers.push(m);
+            });
+
+            // Update UI
+            const cityData = cityNameToData.get(cityName);
+            if (countBadge) countBadge.textContent = `${cityData ? cityData.specimen_count : specimens.length}`;
+            if (titleLabel) titleLabel.textContent = cityName;
+
+            if (markers.length > 0) {
+                const group = L.featureGroup(markers);
+                map.fitBounds(group.getBounds().pad(0.2));
+            } else {
+                // Fallback to city center if no markers
+                const c = cityData;
+                if (c && c.avg_lat != null && c.avg_lng != null) {
+                    map.setView([c.avg_lat, c.avg_lng], 13);
+                }
+            }
+        }
+        
+        // Initialize map when DOM is ready
+        console.log('DOM ready, initializing OpenStreetMap...');
+        initializeMap();
+    });
+</script>
+{% endblock %}

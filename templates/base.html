@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Rock Sample Index{% endblock %}</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    
+    {% block extra_css %}{% endblock %}
+    
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+        }
+        
+        /* Header Section - Compact like Facebook */
+        .header {
+            background: #8B0000;
+            color: white;
+            min-height: 40px;
+            padding: 0.5rem 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .header-left {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .header-logo {
+            width: 32px;
+            height: 32px;
+        }
+        
+        .header-text {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .header-text h1 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 0;
+            line-height: 1.2;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .header-text p {
+            font-size: 0.75rem;
+            margin: 0;
+            opacity: 0.9;
+            line-height: 1.2;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .header-right {
+            flex-shrink: 0;
+            min-width: 0;
+        }
+        
+        .burger-menu {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 1rem;
+            min-width: 32px;
+            height: 32px;
+            padding: 0.25rem;
+        }
+        
+        .burger-menu:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+        
+        .user-profile {
+            flex-shrink: 0;
+            min-width: 0;
+        }
+        
+        .user-profile span {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 150px;
+        }
+        
+        /* Main Layout */
+        .main-container {
+            min-height: calc(100vh - 40px);
+        }
+        
+        /* Sidebar Navigation - Compact like Facebook */
+        .sidebar {
+            background: #8B0000;
+            width: 200px;
+            padding: 1rem 0.5rem;
+            color: white;
+            transition: transform 0.3s ease, opacity 0.3s ease, visibility 0.3s ease;
+            position: relative;
+            z-index: 1000;
+        }
+        
+        .sidebar.collapsed {
+            transform: translateX(-100%);
+            width: 0;
+            padding: 0;
+            visibility: hidden;
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .main-content.expanded {
+            margin-left: 0;
+            width: 100%;
+        }
+        
+        /* Ensure sidebar is completely hidden when collapsed */
+        .sidebar.collapsed * {
+            display: none !important;
+        }
+        
+        .sidebar.collapsed {
+            border: none;
+            box-shadow: none;
+        }
+        
+        .sidebar-title {
+            font-size: 1rem;
+            font-weight: 600;
+            font-style: italic;
+            margin-bottom: 1rem;
+            text-align: center;
+            padding: 0.5rem;
+        }
+        
+        .nav-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .nav-item {
+            margin-bottom: 0.25rem;
+        }
+        
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+        
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            text-decoration: none;
+        }
+        
+        .nav-link.active {
+            background: rgba(255, 255, 255, 0.2);
+            font-weight: 600;
+        }
+        
+        .nav-icon {
+            width: 16px;
+            height: 16px;
+            margin-right: 0.5rem;
+        }
+        
+        /* Main Content Area */
+        .main-content {
+            background: white;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+        
+        /* Footer - Compact like Facebook */
+        .footer {
+            background: #8B0000;
+            padding: 0.5rem 1rem;
+            text-align: center;
+            color: white;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+        }
+        
+        .footer-logo {
+            width: 16px;
+            height: 16px;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header {
+                padding: 0.4rem 0.75rem;
+                min-height: 35px;
+                flex-wrap: nowrap;
+            }
+            
+            .header-left {
+                display: flex;
+                align-items: center;
+                gap: 0.3rem;
+                flex: 1;
+                min-width: 0;
+            }
+            
+            .header-logo {
+                width: 28px;
+                height: 28px;
+            }
+            
+            .header-text h1 {
+                font-size: 0.9rem;
+                line-height: 1.1;
+            }
+            
+            .header-text p {
+                font-size: 0.7rem;
+                line-height: 1.1;
+            }
+            
+            .header-right {
+                flex-shrink: 0;
+                min-width: 0;
+            }
+            
+            .user-profile {
+                flex-direction: column;
+                align-items: center;
+                gap: 0.1rem;
+            }
+            
+            .user-profile span {
+                font-size: 0.65rem;
+                text-align: center;
+                line-height: 1.1;
+                max-width: 70px;
+            }
+            
+            .burger-menu {
+                min-width: 28px;
+                height: 28px;
+                font-size: 0.9rem;
+                margin-right: 0.4rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .main-content {
+                padding: 0.75rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .header {
+                padding: 0.3rem 0.5rem;
+                min-height: 32px;
+                flex-wrap: nowrap;
+            }
+            
+            .header-left {
+                display: flex;
+                align-items: center;
+                gap: 0.25rem;
+                flex: 1;
+                min-width: 0;
+            }
+            
+            .header-logo {
+                width: 24px;
+                height: 24px;
+            }
+            
+            .header-text h1 {
+                font-size: 0.8rem;
+                line-height: 1;
+            }
+            
+            .header-text p {
+                font-size: 0.65rem;
+                line-height: 1;
+            }
+            
+            .header-right {
+                flex-shrink: 0;
+                min-width: 0;
+            }
+            
+            .user-profile span {
+                display: none; /* Hide username on very small screens */
+            }
+            
+            .burger-menu {
+                min-width: 24px;
+                height: 24px;
+                font-size: 0.8rem;
+                margin-right: 0.2rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .main-content {
+                padding: 0.5rem;
+            }
+        }
+    </style>
+    
+    {% block page_styles %}{% endblock %}
+</head>
+<body>
+    <!-- Header Section -->
+    <header class="header d-flex justify-content-between align-items-center p-3">
+        <div class="header-left d-flex align-items-center">
+            <!-- Toggle Button for All Screen Sizes -->
+            <button class="burger-menu btn btn-outline-light rounded me-3" type="button" id="sidebarToggle">
+                <i class="bi bi-list"></i>
+            </button>
+            <img src="{{ url_for('static', filename='photos/logo.png') }}" alt="Department Logo" class="header-logo me-3">
+            <div class="header-text">
+                <h1 class="mb-0">Department of Geology</h1>
+                <p class="mb-0">DUKDOK GEOL!</p>
+            </div>
+        </div>
+        <div class="header-right d-flex align-items-center">
+            <div class="user-profile d-flex align-items-center">
+                <span class="me-2">{% if is_authenticated %}I'm {{ current_user_full_name or current_username }}{% endif %}</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="main-container d-flex">
+        {% block sidebar %}{% endblock %}
+
+        <!-- Main Content Area -->
+        <main class="main-content flex-fill p-4">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer d-flex justify-content-between align-items-center p-3">
+        <div>Department of Geology, All Rights Reserved.</div>
+        <img src="{{ url_for('static', filename='photos/logo.png') }}" alt="Department Logo" class="footer-logo">
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get elements
+            const sidebar = document.querySelector('.sidebar');
+            const mainContent = document.querySelector('.main-content');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            
+            // Universal sidebar toggle functionality (desktop and mobile)
+            if (sidebarToggle && sidebar && mainContent) {
+                sidebarToggle.addEventListener('click', function() {
+                    // Check if we're on mobile (use offcanvas) or desktop (use custom toggle)
+                    if (window.innerWidth < 768) {
+                        // Mobile: Use Bootstrap offcanvas
+                        const offcanvasElement = document.getElementById('sidebarOffcanvas');
+                        if (offcanvasElement) {
+                            const offcanvas = new bootstrap.Offcanvas(offcanvasElement);
+                            offcanvas.toggle();
+                        }
+                    } else {
+                        // Desktop: Use custom toggle
+                        const isCollapsed = sidebar.classList.contains('collapsed');
+                        
+                        if (isCollapsed) {
+                            // Show sidebar
+                            sidebar.classList.remove('collapsed');
+                            mainContent.classList.remove('expanded');
+                        } else {
+                            // Hide sidebar
+                            sidebar.classList.add('collapsed');
+                            mainContent.classList.add('expanded');
+                        }
+                        
+                        // Change burger menu icon
+                        const icon = this.querySelector('i');
+                        if (sidebar.classList.contains('collapsed')) {
+                            icon.className = 'bi bi-list';
+                            this.setAttribute('title', 'Show Sidebar');
+                        } else {
+                            icon.className = 'bi bi-x';
+                            this.setAttribute('title', 'Hide Sidebar');
+                        }
+                    }
+                });
+            }
+            
+            // Handle window resize to ensure proper behavior
+            window.addEventListener('resize', function() {
+                if (window.innerWidth >= 768) {
+                    // On desktop, ensure offcanvas is closed
+                    const offcanvasElement = document.getElementById('sidebarOffcanvas');
+                    if (offcanvasElement) {
+                        const offcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement);
+                        if (offcanvas) {
+                            offcanvas.hide();
+                        }
+                    }
+                }
+            });
+            
+            // Add click handlers for navigation
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    // Remove active class from all links
+                    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                    // Add active class to clicked link
+                    this.classList.add('active');
+                });
+            });
+        });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
+

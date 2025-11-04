@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block sidebar %}
+<!-- Sidebar Navigation -->
+<nav class="sidebar d-none d-md-block">
+    <h2 class="sidebar-title text-center mb-4">ROCK SAMPLE INDEX</h2>
+    <ul class="nav-menu list-unstyled">
+        <li class="nav-item mb-2">
+            <a href="{{ url_for('personnel_dashboard') }}" class="nav-link {% if request.endpoint == 'personnel_dashboard' %}active{% endif %} d-flex align-items-center p-3 rounded">
+                <i class="bi bi-grid-3x3-gap-fill nav-icon me-3"></i>
+                DASHBOARD
+            </a>
+        </li>
+        <li class="nav-item mb-2">
+            <a href="{{ url_for('personnel_rock_list') }}" class="nav-link {% if request.endpoint in ['personnel_rock_list', 'personnel_rock_detail'] %}active{% endif %} d-flex align-items-center p-3 rounded">
+                <i class="bi bi-list-ul nav-icon me-3"></i>
+                ROCK SAMPLES
+            </a>
+        </li>
+        <li class="nav-item mb-2">
+            <a href="{{ url_for('personnel_map') }}" class="nav-link {% if request.endpoint == 'personnel_map' %}active{% endif %} d-flex align-items-center p-3 rounded">
+                <i class="bi bi-map-fill nav-icon me-3"></i>
+                MAP
+            </a>
+        </li>
+        <li class="nav-item mb-2">
+            <a href="{{ url_for('personnel_verification_panel') }}" class="nav-link {% if request.endpoint == 'personnel_verification_panel' %}active{% endif %} d-flex align-items-center p-3 rounded">
+                <i class="bi bi-check-square-fill nav-icon me-3"></i>
+                VERIFICATION PANEL
+            </a>
+        </li>
+        <li class="nav-item mb-2">
+            <a href="{{ url_for('personnel_activity_logs') }}" class="nav-link {% if request.endpoint == 'personnel_activity_logs' %}active{% endif %} d-flex align-items-center p-3 rounded">
+                <i class="bi bi-clock-history nav-icon me-3"></i>
+                ACTIVITY LOGS
+            </a>
+        </li>
+        <li class="nav-item mb-2">
+            <a href="{{ url_for('personnel_archives') }}" class="nav-link {% if request.endpoint == 'personnel_archives' %}active{% endif %} d-flex align-items-center p-3 rounded">
+                <i class="bi bi-archive-fill nav-icon me-3"></i>
+                ARCHIVES
+            </a>
+        </li>
+        <li class="nav-item mb-2">
+            <a href="{{ url_for('personnel_settings') }}" class="nav-link {% if request.endpoint == 'personnel_settings' %}active{% endif %} d-flex align-items-center p-3 rounded">
+                <i class="bi bi-gear-fill nav-icon me-3"></i>
+                SETTINGS
+            </a>
+        </li>
+        <li class="nav-item mb-2">
+            <a href="{{ url_for('logout') }}" class="nav-link d-flex align-items-center p-3 rounded">
+                <i class="bi bi-box-arrow-right nav-icon me-3"></i>
+                LOGOUT
+            </a>
+        </li>
+    </ul>
+</nav>
+
+<!-- Bootstrap Offcanvas Sidebar for Mobile -->
+<div class="offcanvas offcanvas-start d-md-none" tabindex="-1" id="sidebarOffcanvas" aria-labelledby="sidebarOffcanvasLabel">
+    <div class="offcanvas-header" style="background: #8B0000; color: white;">
+        <h5 class="offcanvas-title fst-italic fw-bold" id="sidebarOffcanvasLabel">ROCK SAMPLE INDEX</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body p-0" style="background: #8B0000; color: white;">
+        <ul class="nav-menu list-unstyled m-0 p-0">
+            <li class="nav-item mb-2">
+                <a href="{{ url_for('personnel_dashboard') }}" class="nav-link {% if request.endpoint == 'personnel_dashboard' %}active{% endif %} d-flex align-items-center p-3 rounded">
+                    <i class="bi bi-grid-3x3-gap-fill nav-icon me-3"></i>
+                    DASHBOARD
+                </a>
+            </li>
+            <li class="nav-item mb-2">
+                <a href="{{ url_for('personnel_rock_list') }}" class="nav-link {% if request.endpoint in ['personnel_rock_list', 'personnel_rock_detail'] %}active{% endif %} d-flex align-items-center p-3 rounded">
+                    <i class="bi bi-list-ul nav-icon me-3"></i>
+                    ROCK SAMPLES
+                </a>
+            </li>
+            <li class="nav-item mb-2">
+                <a href="{{ url_for('personnel_map') }}" class="nav-link {% if request.endpoint == 'personnel_map' %}active{% endif %} d-flex align-items-center p-3 rounded">
+                    <i class="bi bi-map-fill nav-icon me-3"></i>
+                    MAP
+                </a>
+            </li>
+            <li class="nav-item mb-2">
+                <a href="{{ url_for('personnel_verification_panel') }}" class="nav-link {% if request.endpoint == 'personnel_verification_panel' %}active{% endif %} d-flex align-items-center p-3 rounded">
+                    <i class="bi bi-check-square-fill nav-icon me-3"></i>
+                    VERIFICATION PANEL
+                </a>
+            </li>
+            <li class="nav-item mb-2">
+                <a href="{{ url_for('personnel_activity_logs') }}" class="nav-link {% if request.endpoint == 'personnel_activity_logs' %}active{% endif %} d-flex align-items-center p-3 rounded">
+                    <i class="bi bi-clock-history nav-icon me-3"></i>
+                    ACTIVITY LOGS
+                </a>
+            </li>
+            <li class="nav-item mb-2">
+                <a href="{{ url_for('personnel_archives') }}" class="nav-link {% if request.endpoint == 'personnel_archives' %}active{% endif %} d-flex align-items-center p-3 rounded">
+                    <i class="bi bi-archive-fill nav-icon me-3"></i>
+                    ARCHIVES
+                </a>
+            </li>
+            <li class="nav-item mb-2">
+                <a href="{{ url_for('personnel_settings') }}" class="nav-link {% if request.endpoint == 'personnel_settings' %}active{% endif %} d-flex align-items-center p-3 rounded">
+                    <i class="bi bi-gear-fill nav-icon me-3"></i>
+                    SETTINGS
+                </a>
+            </li>
+            <li class="nav-item mb-2">
+                <a href="{{ url_for('logout') }}" class="nav-link d-flex align-items-center p-3 rounded">
+                    <i class="bi bi-box-arrow-right nav-icon me-3"></i>
+                    LOGOUT
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+<!-- Extra JavaScript for specific pages -->
+</script>
+{% endblock %}
+

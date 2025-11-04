@@ -1,0 +1,15 @@
+# Flask Framework
+Flask
+
+# MySQL Database Connector
+mysql-connector-python
+
+# Password Hashing and Security
+Werkzeug
+
+# Environment Variables Management (Optional)
+python-dotenv
+
+# Additional Utilities
+Pillow
+

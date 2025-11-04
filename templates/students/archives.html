@@ -1,0 +1,176 @@
+{% extends "students_base.html" %}
+
+{% block title %}Archives - Student Dashboard{% endblock %}
+
+{% block page_styles %}
+<style>
+/* Archives Page Specific Styles - Compact */
+.page-header {
+    background: #8B0000;
+    color: white;
+    padding: 1rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 8px rgba(139, 0, 0, 0.2);
+}
+
+.page-header h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.page-header p {
+    font-size: 0.9rem;
+    margin: 0;
+    opacity: 0.9;
+}
+
+.archives-container {
+    background: white;
+    border-radius: 6px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.archives-table {
+    margin-bottom: 0;
+    font-size: 0.9rem;
+}
+
+.archives-table thead {
+    background: #8B0000;
+    color: white;
+}
+
+.archives-table th {
+    padding: 0.75rem 0.5rem;
+    text-align: left;
+    font-weight: 600;
+    border: none;
+    font-size: 0.85rem;
+}
+
+.archives-table td {
+    padding: 0.75rem 0.5rem;
+    vertical-align: middle;
+    border-bottom: 1px solid #dee2e6;
+    font-size: 0.85rem;
+}
+
+.archives-table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.status-badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+}
+
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+}
+
+.no-archives {
+    text-align: center;
+    padding: 2rem 1rem;
+}
+
+.no-archives i {
+    font-size: 2rem;
+    color: #dee2e6;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .page-header h1 {
+        font-size: 1.25rem;
+    }
+    
+    .page-header p {
+        font-size: 0.8rem;
+    }
+    
+    .archives-table th,
+    .archives-table td {
+        padding: 0.5rem 0.25rem;
+    }
+    
+    .status-badge {
+        font-size: 0.7rem;
+        padding: 0.2rem 0.4rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-header h1 {
+        font-size: 1.1rem;
+    }
+    
+    .archives-table {
+        font-size: 0.8rem;
+    }
+    
+    .archives-table th,
+    .archives-table td {
+        padding: 0.4rem 0.2rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <h1><i class="bi bi-archive-fill me-3"></i>My Archives</h1>
+    <p>View your archived rock samples</p>
+</div>
+
+<!-- Archives Table -->
+<div class="archives-container">
+    <div class="table-responsive">
+        <table class="archives-table table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>Rock ID</th>
+                    <th>Type</th>
+                    <th>Location</th>
+                    <th>Archived Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if archives %}
+                    {% for rock in archives %}
+                    <tr>
+                        <td>{{ rock.rock_id }}</td>
+                        <td>{{ rock.rock_type }}</td>
+                        <td>{{ rock.location_name }}</td>
+                        <td>{{ rock.archived_at.strftime('%Y-%m-%d %H:%M') if rock.archived_at else '' }}</td>
+                        <td>
+                            <span class="badge status-badge bg-secondary">Archived</span>
+                        </td>
+                        <td>
+                            <a href="{{ url_for('student_rock_detail', rock_id=rock.sample_id) }}" class="btn btn-primary btn-sm">
+                                <i class="bi bi-eye-fill"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center py-3">
+                            <div class="no-archives">
+                                <i class="bi bi-inbox"></i>
+                                <h5 class="text-muted mt-2">No archived rocks found</h5>
+                            </div>
+                        </td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

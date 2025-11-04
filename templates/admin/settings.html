@@ -1,0 +1,200 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Settings - Admin Dashboard{% endblock %}
+
+{% block page_styles %}
+<style>
+/* Settings Page Compact Styles */
+.settings-section {
+    background: white;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.settings-section h2 {
+    color: #8B0000;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #8B0000;
+}
+
+.form-label {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.25rem;
+    font-size: 0.85rem;
+}
+
+.form-control, .form-select {
+    border-radius: 6px;
+    border: 1px solid #dee2e6;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #8B0000;
+    box-shadow: 0 0 0 0.2rem rgba(139, 0, 0, 0.25);
+}
+
+.btn-save {
+    background: #8B0000;
+    color: white;
+    border: none;
+    padding: 0.5rem 1.25rem;
+    font-weight: 600;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    font-size: 0.85rem;
+}
+
+.btn-save:hover {
+    background: #a00000;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(139, 0, 0, 0.3);
+}
+
+.alert-success {
+    background: #d1e7dd;
+    color: #0f5132;
+    border: 1px solid #badbcc;
+    border-radius: 6px;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    font-size: 0.85rem;
+}
+
+.mb-3 {
+    margin-bottom: 0.75rem !important;
+}
+
+@media (max-width: 768px) {
+    .page-header h1 {
+        font-size: 1.25rem;
+    }
+    
+    .page-header p {
+        font-size: 0.8rem;
+    }
+    
+    .settings-section {
+        padding: 0.75rem;
+    }
+    
+    .settings-section h2 {
+        font-size: 0.9rem;
+    }
+    
+    .form-label {
+        font-size: 0.8rem;
+    }
+    
+    .form-control, .form-select {
+        font-size: 0.8rem;
+        padding: 0.4rem 0.6rem;
+    }
+    
+    .btn-save {
+        padding: 0.4rem 1rem;
+        font-size: 0.8rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <h1><i class="bi bi-gear-fill me-2"></i>System Settings</h1>
+    <p>Manage your profile and account settings</p>
+</div>
+
+{% if success_message %}
+<div class="alert-success">
+    <i class="bi bi-check-circle-fill me-2"></i>{{ success_message }}
+</div>
+{% endif %}
+
+<!-- Profile Settings -->
+<div class="settings-section">
+    <h2><i class="bi bi-person-fill me-2"></i>Profile Settings</h2>
+    <form method="POST" action="{{ url_for('admin_update_profile') }}">
+        {{ form.hidden_tag() if form }}
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="first_name" class="form-label">First Name</label>
+                <input type="text" class="form-control" id="first_name" name="first_name" 
+                       value="{{ user.first_name if user else '' }}" required>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="last_name" class="form-label">Last Name</label>
+                <input type="text" class="form-control" id="last_name" name="last_name" 
+                       value="{{ user.last_name if user else '' }}" required>
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="email" class="form-label">Email Address</label>
+            <input type="email" class="form-control" id="email" name="email_display" 
+                   value="{{ user.email if user else '' }}" required disabled>
+            <input type="hidden" name="email" value="{{ user.email if user else '' }}">
+        </div>
+        <button type="submit" class="btn-save">
+            <i class="bi bi-save-fill me-2"></i>Save Profile
+        </button>
+    </form>
+</div>
+
+<!-- Password Settings -->
+<div class="settings-section">
+    <h2><i class="bi bi-shield-lock-fill me-2"></i>Change Password</h2>
+    <form method="POST" action="{{ url_for('admin_change_password') }}">
+        {{ form.hidden_tag() if form }}
+        <div class="mb-3">
+            <label for="current_password" class="form-label">Current Password</label>
+            <input type="password" class="form-control" id="current_password" name="current_password" required>
+        </div>
+        <div class="mb-3">
+            <label for="new_password" class="form-label">New Password</label>
+            <input type="password" class="form-control" id="new_password" name="new_password" required>
+        </div>
+        <div class="mb-3">
+            <label for="confirm_password" class="form-label">Confirm New Password</label>
+            <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+        </div>
+        <button type="submit" class="btn-save">
+            <i class="bi bi-shield-lock-fill me-2"></i>Update Password
+        </button>
+    </form>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Form validation
+document.querySelectorAll('form').forEach(form => {
+    form.addEventListener('submit', function(e) {
+        if (form.id === 'passwordForm') {
+            const newPassword = document.getElementById('new_password').value;
+            const confirmPassword = document.getElementById('confirm_password').value;
+            
+            if (newPassword !== confirmPassword) {
+                e.preventDefault();
+                alert('New password and confirm password do not match');
+                return false;
+            }
+            
+            if (newPassword.length < 8) {
+                e.preventDefault();
+                alert('Password must be at least 8 characters long');
+                return false;
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

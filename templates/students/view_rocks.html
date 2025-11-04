@@ -1,0 +1,333 @@
+{% extends "students_base.html" %}
+
+{% block title %}View Rocks - Student Dashboard{% endblock %}
+
+{% block page_styles %}
+<style>
+/* View Rocks Page Specific Styles - Compact */
+.page-header {
+    background: #8B0000;
+    color: white;
+    padding: 1rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 8px rgba(139, 0, 0, 0.2);
+}
+
+.page-header h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.page-header p {
+    font-size: 0.9rem;
+    margin: 0;
+    opacity: 0.9;
+}
+
+.filter-card {
+    background: white;
+    border-radius: 6px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.stats-cards {
+    margin-bottom: 1rem;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 6px;
+    padding: 0.75rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid;
+}
+
+.stat-card.total {
+    border-left-color: #dc3545;
+}
+
+.stat-card.verified {
+    border-left-color: #28a745;
+}
+
+.stat-card.pending {
+    border-left-color: #ffc107;
+}
+
+.stat-card.rejected {
+    border-left-color: #dc3545;
+}
+
+.stat-number {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.stat-label {
+    font-size: 0.85rem;
+    color: #6c757d;
+    margin-bottom: 0;
+}
+
+.rocks-table {
+    background: white;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.table-header {
+    background: #8B0000;
+    color: white;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.table {
+    margin-bottom: 0;
+    font-size: 0.9rem;
+}
+
+.table th {
+    background: #f8f9fa;
+    color: #495057;
+    font-weight: 600;
+    padding: 0.75rem 0.5rem;
+    border-bottom: 2px solid #dee2e6;
+    font-size: 0.85rem;
+}
+
+.table td {
+    padding: 0.75rem 0.5rem;
+    vertical-align: middle;
+    border-bottom: 1px solid #dee2e6;
+    font-size: 0.85rem;
+}
+
+.table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.status-badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+}
+
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+}
+
+.location-pin {
+    color: #dc3545;
+    margin-right: 0.25rem;
+}
+
+.no-data {
+    text-align: center;
+    padding: 2rem 1rem;
+}
+
+.no-data i {
+    font-size: 2rem;
+    color: #dee2e6;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .page-header h1 {
+        font-size: 1.25rem;
+    }
+    
+    .page-header p {
+        font-size: 0.8rem;
+    }
+    
+    .filter-card {
+        padding: 0.75rem;
+    }
+    
+    .stat-card {
+        padding: 0.5rem;
+    }
+    
+    .stat-number {
+        font-size: 1.25rem;
+    }
+    
+    .table th,
+    .table td {
+        padding: 0.5rem 0.25rem;
+    }
+    
+    .status-badge {
+        font-size: 0.7rem;
+        padding: 0.2rem 0.4rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-header h1 {
+        font-size: 1.1rem;
+    }
+    
+    .table {
+        font-size: 0.8rem;
+    }
+    
+    .table th,
+    .table td {
+        padding: 0.4rem 0.2rem;
+    }
+    
+    .stat-number {
+        font-size: 1.1rem;
+    }
+    
+    .stat-label {
+        font-size: 0.8rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1><i class="bi bi-collection-fill me-3"></i>Verified Rock Samples</h1>
+            <p class="mb-0">Browse all verified rock samples from students</p>
+        </div>
+        <a href="{{ url_for('student_add_rock') }}" class="btn btn-light btn-sm">
+            <i class="bi bi-plus-circle-fill me-1"></i>Add New Rock
+        </a>
+    </div>
+</div>
+
+<!-- Search and Filter Section -->
+<div class="filter-card">
+    <h5 class="mb-3" style="color: #8B0000;"><i class="bi bi-funnel-fill me-2"></i>Search & Filter</h5>
+    <form method="GET" action="{{ url_for('student_view_rocks') }}" class="row g-3">
+        <div class="col-md-4">
+            <label for="search" class="form-label">Search</label>
+            <input type="text" class="form-control" id="search" name="search" 
+                   placeholder="Search by Rock ID, Type..." 
+                   value="{{ search_query or '' }}">
+        </div>
+        <div class="col-md-3">
+            <label for="rock_type" class="form-label">Rock Type</label>
+            <select class="form-select" id="rock_type" name="rock_type">
+                <option value="">All Types</option>
+                {% for rock_type in rock_types %}
+                <option value="{{ rock_type.rock_type }}" 
+                        {% if rock_type_filter == rock_type.rock_type %}selected{% endif %}>
+                    {{ rock_type.rock_type }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label for="date_from" class="form-label">From Date</label>
+            <input type="date" class="form-control" id="date_from" name="date_from" 
+                   value="{{ date_from or '' }}">
+        </div>
+        <div class="col-md-2">
+            <label for="date_to" class="form-label">To Date</label>
+            <input type="date" class="form-control" id="date_to" name="date_to" 
+                   value="{{ date_to or '' }}">
+        </div>
+        <div class="col-12">
+            <button type="submit" class="btn btn-primary btn-sm" style="background: #8B0000; border: none;">
+                <i class="bi bi-search me-1"></i>Search & Filter
+            </button>
+            <a href="{{ url_for('student_view_rocks') }}" class="btn btn-secondary btn-sm ms-2">
+                <i class="bi bi-x-circle me-1"></i>Clear Filters
+            </a>
+        </div>
+    </form>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row g-3 mb-3">
+    <div class="col-md-12">
+        <div class="stat-card verified">
+            <div class="stat-number text-success">{{ rocks|length }}</div>
+            <div class="stat-label">Verified Rocks</div>
+        </div>
+    </div>
+</div>
+
+<!-- Rocks Table -->
+<div class="rocks-table">
+    <h5 class="table-header"><i class="bi bi-list-ul me-2"></i>Rock Sample List</h5>
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Sample Index</th>
+                    <th>Rock ID</th>
+                    <th>Type</th>
+                    <th>Location</th>
+                    <th>Submitted By</th>
+                    <th>Status</th>
+                    <th>View</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                {% if rocks %}
+                    {% for rock in rocks %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td><strong>{{ rock.rock_index or 'N/A' }}</strong></td>
+                        <td>{{ rock.rock_id or 'N/A' }}</td>
+                        <td>{{ rock.rock_type }}</td>
+                        <td>
+                            <i class="bi bi-geo-alt-fill location-pin"></i>
+                            {{ rock.location_name }}
+                        </td>
+                        <td>{{ rock.created_at.strftime('%b %d, %Y') if rock.created_at else 'N/A' }}</td>
+                        <td>
+                            <span class="badge status-badge 
+                                {% if rock.status == 'verified' %}bg-success text-white
+                                {% elif rock.status == 'pending' %}bg-warning text-dark
+                                {% else %}bg-danger text-white{% endif %}">
+                                {{ rock.status|title }}
+                            </span>
+                        </td>
+                        <td>
+                            <a href="{{ url_for('student_rock_detail', rock_id=rock.sample_id) }}" 
+                               class="btn btn-primary btn-sm" title="View Details">
+                                <i class="bi bi-eye-fill"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="8">
+                            <div class="no-data">
+                                <i class="bi bi-inbox"></i>
+                                <h5 class="text-muted mt-2">No Rock Samples Yet</h5>
+                                <p class="text-muted">Start by adding your first rock sample</p>
+                                <a href="{{ url_for('student_add_rock') }}" class="btn btn-primary btn-sm" style="background: #8B0000; border: none;">
+                                    <i class="bi bi-plus-circle-fill me-1"></i>Add Your First Rock
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

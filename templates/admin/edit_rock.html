@@ -1,0 +1,291 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Edit Rock Sample - Admin Dashboard{% endblock %}
+
+{% block page_styles %}
+<style>
+/* Edit Rock Page Specific Styles */
+.form-card {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.form-card h2 {
+    color: #8B0000;
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #8B0000;
+}
+
+.form-label {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.25rem;
+    font-size: 0.9rem;
+}
+
+.form-control, .form-select {
+    border-radius: 6px;
+    border: 1px solid #dee2e6;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.9rem;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #8B0000;
+    box-shadow: 0 0 0 0.2rem rgba(139, 0, 0, 0.25);
+}
+
+.btn-submit {
+    background: #8B0000;
+    color: white;
+    border: none;
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-submit:hover {
+    background: #a00000;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(139, 0, 0, 0.3);
+}
+
+.btn-cancel {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-cancel:hover {
+    background: #5c636a;
+    color: white;
+    text-decoration: none;
+}
+
+.page-header {
+    background: linear-gradient(135deg, #8B0000 0%, #a00000 100%);
+    color: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 15px rgba(139, 0, 0, 0.2);
+}
+
+.page-header h1 {
+    font-size: 1.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.page-header p {
+    margin-bottom: 0;
+    opacity: 0.9;
+}
+
+.required {
+    color: #dc3545;
+}
+
+@media (max-width: 768px) {
+    .form-card {
+        padding: 1rem;
+    }
+    
+    .btn-submit, .btn-cancel {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <h1><i class="bi bi-pencil-fill me-2"></i>Edit Rock Sample</h1>
+    <p>Modify the details for sample {{ rock.rock_id }}</p>
+</div>
+
+<form method="POST" action="{{ url_for('admin_edit_rock', sample_id=rock.sample_id) }}">
+    <div class="row">
+        <!-- Left Column -->
+        <div class="col-lg-6">
+            <!-- Basic Information -->
+            <div class="form-card">
+                <h2><i class="bi bi-info-circle me-2"></i>Basic Information</h2>
+                
+                <div class="mb-3">
+                    <label for="rock_id" class="form-label">Rock ID <span class="required">*</span></label>
+                    <input type="text" class="form-control" id="rock_id" name="rock_id" 
+                           value="{{ rock.rock_id or '' }}" required>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="rock_index" class="form-label">Sample Index</label>
+                    <input type="text" class="form-control" id="rock_index" name="rock_index" 
+                           value="{{ rock.rock_index or '' }}">
+                </div>
+                
+                <div class="mb-3">
+                    <label for="rock_type" class="form-label">Rock Type <span class="required">*</span></label>
+                    <select class="form-select" id="rock_type" name="rock_type" required>
+                        <option value="">Select Rock Type</option>
+                        <option value="Igneous Rock" {% if rock.rock_type == 'Igneous Rock' %}selected{% endif %}>Igneous Rock</option>
+                        <option value="Sedimentary Rock" {% if rock.rock_type == 'Sedimentary Rock' %}selected{% endif %}>Sedimentary Rock</option>
+                        <option value="Metamorphic Rock" {% if rock.rock_type == 'Metamorphic Rock' %}selected{% endif %}>Metamorphic Rock</option>
+                    </select>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="description" class="form-label">Description</label>
+                    <textarea class="form-control" id="description" name="description" rows="4">{{ rock.description or '' }}</textarea>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="formation" class="form-label">Formation (Rock Formation)</label>
+                    <input type="text" class="form-control" id="formation" name="formation" 
+                           value="{{ rock.formation or '' }}">
+                </div>
+            </div>
+        </div>
+        
+        <!-- Right Column -->
+        <div class="col-lg-6">
+            <!-- Location Information -->
+            <div class="form-card">
+                <h2><i class="bi bi-geo-alt me-2"></i>Location Information</h2>
+                
+                <div class="mb-3">
+                    <label for="location_name" class="form-label">Location (City/Municipality) <span class="required">*</span></label>
+                    <input type="text" class="form-control" id="location_name" name="location_name" 
+                           value="{{ rock.location_name or '' }}" required>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="latitude" class="form-label">Latitude</label>
+                        <input type="number" step="any" class="form-control" id="latitude" name="latitude" 
+                               value="{{ rock.latitude or '' }}">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="longitude" class="form-label">Longitude</label>
+                        <input type="number" step="any" class="form-control" id="longitude" name="longitude" 
+                               value="{{ rock.longitude or '' }}">
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="outcrop_id" class="form-label">Outcrop ID</label>
+                    <input type="text" class="form-control" id="outcrop_id" name="outcrop_id" 
+                           value="{{ rock.outcrop_id or '' }}">
+                </div>
+            </div>
+            
+            <!-- Student Information (Read-only) -->
+            <div class="form-card">
+                <h2><i class="bi bi-person me-2"></i>Student Information</h2>
+                
+                <div class="mb-3">
+                    <label class="form-label">Submitted By</label>
+                    <div class="form-control-plaintext">
+                        <i class="bi bi-person-fill me-1"></i>
+                        {{ rock.student_name or 'Unknown' }}
+                    </div>
+                </div>
+                
+                {% if rock.school_id %}
+                <div class="mb-3">
+                    <label class="form-label">Student ID</label>
+                    <div class="form-control-plaintext">
+                        <i class="bi bi-card-text me-1"></i>
+                        {{ rock.school_id }}
+                    </div>
+                </div>
+                {% endif %}
+                
+                <div class="mb-3">
+                    <label class="form-label">Submitted On</label>
+                    <div class="form-control-plaintext">
+                        <i class="bi bi-calendar-event me-1"></i>
+                        {{ rock.created_at.strftime('%B %d, %Y at %I:%M %p') if rock.created_at else 'N/A' }}
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Current Status</label>
+                    <div class="form-control-plaintext">
+                        <span class="badge bg-{% if rock.status == 'verified' %}success{% elif rock.status == 'pending' %}warning{% else %}danger{% endif %}">
+                            {{ rock.status.upper() }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Action Buttons -->
+    <div class="row">
+        <div class="col-12">
+            <div class="form-card">
+                <div class="d-flex justify-content-between">
+                    <a href="{{ url_for('admin_rock_detail', sample_id=rock.sample_id) }}" class="btn-cancel">
+                        <i class="bi bi-arrow-left me-2"></i>Cancel
+                    </a>
+                    <button type="submit" class="btn-submit">
+                        <i class="bi bi-check-circle me-2"></i>Update Rock Sample
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Form validation
+    const form = document.querySelector('form');
+    const requiredFields = form.querySelectorAll('[required]');
+    
+    form.addEventListener('submit', function(e) {
+        let isValid = true;
+        
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                field.classList.add('is-invalid');
+                isValid = false;
+            } else {
+                field.classList.remove('is-invalid');
+            }
+        });
+        
+        if (!isValid) {
+            e.preventDefault();
+            alert('Please fill in all required fields.');
+        }
+    });
+    
+    // Remove validation styling on input
+    requiredFields.forEach(field => {
+        field.addEventListener('input', function() {
+            if (this.value.trim()) {
+                this.classList.remove('is-invalid');
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

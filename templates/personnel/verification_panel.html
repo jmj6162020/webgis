@@ -1,0 +1,333 @@
+{% extends "personnel_base.html" %}
+
+{% block title %}Verification Panel - Personnel Dashboard{% endblock %}
+
+{% block page_styles %}
+<style>
+/* Compact page header */
+.page-header {
+    background: #8B0000;
+    color: white;
+    padding: 1rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 8px rgba(139, 0, 0, 0.2);
+}
+
+.page-header h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.page-header p {
+    font-size: 0.9rem;
+    margin: 0;
+    opacity: 0.9;
+}
+
+/* Compact pending rocks container */
+.pending-rocks-container {
+    background: white;
+    border-radius: 6px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.pending-table {
+    font-size: 0.9rem;
+}
+
+.pending-table thead {
+    background: #8B0000;
+    color: white;
+}
+
+.pending-table th {
+    padding: 0.75rem 0.5rem;
+    font-size: 0.85rem;
+    text-align: center;
+}
+
+.pending-table td {
+    padding: 0.75rem 0.5rem;
+    font-size: 0.85rem;
+    text-align: center;
+}
+
+.action-btns {
+    display: flex;
+    gap: 0.25rem;
+    justify-content: center;
+}
+
+.btn-verify {
+    background: #198754;
+    color: white;
+    border: none;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+
+.btn-verify:hover {
+    background: #157347;
+}
+
+.btn-reject {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+
+.btn-reject:hover {
+    background: #bb2d3b;
+}
+
+.btn-view {
+    background: #0d6efd;
+    color: white;
+    border: none;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 0.8rem;
+}
+
+.btn-view:hover {
+    background: #0b5ed7;
+    color: white;
+}
+
+.btn-archive {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+
+.btn-archive:hover {
+    background: #5a6268;
+}
+
+.status-badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.no-pending {
+    padding: 2rem 1rem;
+    text-align: center;
+}
+
+.no-pending i {
+    font-size: 2rem;
+    color: #6c757d;
+}
+
+.no-pending h5 {
+    color: #6c757d;
+    margin-top: 1rem;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .page-header h1 {
+        font-size: 1.25rem;
+    }
+    
+    .page-header p {
+        font-size: 0.8rem;
+    }
+    
+    .pending-table th,
+    .pending-table td {
+        padding: 0.5rem 0.25rem;
+    }
+    
+    .action-btns {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+    
+    .btn-verify,
+    .btn-reject,
+    .btn-view {
+        font-size: 0.75rem;
+        padding: 0.2rem 0.4rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-header h1 {
+        font-size: 1.1rem;
+    }
+    
+    .pending-table {
+        font-size: 0.8rem;
+    }
+    
+    .pending-table th,
+    .pending-table td {
+        padding: 0.4rem 0.2rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <h1><i class="bi bi-check-square-fill me-2"></i>Verification Panel</h1>
+    <p>Review and verify pending rock submissions</p>
+</div>
+
+<!-- Pending Rocks Table -->
+<div class="pending-rocks-container">
+    <div class="table-responsive">
+        <table class="pending-table table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>Rock ID</th>
+                    <th>Type</th>
+                    <th>Location</th>
+                    <th>Submitted By</th>
+                    <th>Submission Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if pending_rocks %}
+                    {% for rock in pending_rocks %}
+                    <tr>
+                        <td>{{ rock.rock_id }}</td>
+                        <td>{{ rock.rock_type }}</td>
+                        <td>{{ rock.location_name }}</td>
+                        <td>{{ rock.submitted_by.username if rock.submitted_by else 'Unknown' }}</td>
+                        <td>{{ rock.created_at.strftime('%Y-%m-%d %H:%M') if rock.created_at else '' }}</td>
+                        <td>
+                            <span class="status-badge badge bg-warning text-dark">
+                                <i class="bi bi-clock-fill me-1"></i>Pending
+                            </span>
+                        </td>
+                        <td>
+                            <div class="action-btns">
+                                <a href="{{ url_for('personnel_rock_detail', sample_id=rock.sample_id) }}" class="btn-view">
+                                    <i class="bi bi-eye-fill me-1"></i>View
+                                </a>
+                                <button class="btn-verify" data-rock-id="{{ rock.sample_id }}" onclick="verifyRock(this.dataset.rockId)">
+                                    <i class="bi bi-check-circle-fill me-1"></i>Verify
+                                </button>
+                                <button class="btn-reject" data-rock-id="{{ rock.sample_id }}" onclick="rejectRock(this.dataset.rockId)">
+                                    <i class="bi bi-x-circle-fill me-1"></i>Reject
+                                </button>
+                                <button class="btn-archive" data-rock-id="{{ rock.sample_id }}" onclick="archiveRock(this.dataset.rockId)">
+                                    <i class="bi bi-archive-fill me-1"></i>Archive
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="7" class="no-pending">
+                            <i class="bi bi-inbox"></i>
+                            <h5>No pending verifications</h5>
+                        </td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function verifyRock(rockId) {
+    if (confirm('Are you sure you want to verify this rock submission?')) {
+        const formData = new FormData();
+        formData.append('action', 'approve');
+        formData.append('remarks', '');
+        
+        fetch(`/personnel/verify-rock/${rockId}`, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (response.ok) {
+                location.reload();
+            } else {
+                alert('Error verifying rock');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error verifying rock');
+        });
+    }
+}
+        
+function rejectRock(rockId) {
+    if (confirm('Are you sure you want to reject this rock submission?')) {
+        const reason = prompt('Please provide a reason for rejection (optional):');
+        
+        const formData = new FormData();
+        formData.append('action', 'reject');
+        formData.append('remarks', reason || '');
+        
+        fetch(`/personnel/verify-rock/${rockId}`, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (response.ok) {
+                location.reload();
+            } else {
+                alert('Error rejecting rock');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error rejecting rock');
+        });
+    }
+}
+
+function archiveRock(rockId) {
+    if (confirm('Are you sure you want to archive this rock submission?')) {
+        const reason = prompt('Please provide a reason for archiving (optional):');
+        
+        const formData = new FormData();
+        formData.append('reason', reason || '');
+        
+        fetch(`/personnel/archive-rock/${rockId}`, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (response.ok) {
+                location.reload();
+            } else {
+                alert('Error archiving rock');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error archiving rock');
+        });
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,279 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<style>
+/* Compact Admin Styling */
+.page-header {
+    background: linear-gradient(135deg, #8B0000 0%, #a00000 100%);
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 8px rgba(139, 0, 0, 0.2);
+}
+
+.page-header h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.page-header p {
+    font-size: 0.9rem;
+    margin: 0.25rem 0 0 0;
+    opacity: 0.9;
+}
+
+/* Sidebar Active State - More Specific */
+.sidebar .nav-link.active,
+.offcanvas .nav-link.active {
+    background: rgba(255, 255, 255, 0.3) !important;
+    font-weight: 700 !important;
+    color: white !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Compact Tables */
+.table-container {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.table-container table {
+    margin-bottom: 0;
+    font-size: 0.9rem;
+}
+
+.table-container thead th {
+    background: #8B0000 !important;
+    color: white;
+    white-space: nowrap;
+    text-align: center;
+    padding: 0.75rem 0.5rem;
+    font-weight: 600;
+    border: none;
+    font-size: 0.85rem;
+}
+
+.table-container tbody td {
+    padding: 0.75rem 0.5rem;
+    text-align: center;
+    vertical-align: middle;
+    border-top: 1px solid #dee2e6;
+}
+
+/* Compact Cards */
+.compact-card {
+    background: white;
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1rem;
+}
+
+/* Compact Buttons */
+.btn-compact {
+    padding: 0.25rem 0.75rem;
+    font-size: 0.85rem;
+    border-radius: 4px;
+}
+
+.btn-compact-sm {
+    padding: 0.2rem 0.5rem;
+    font-size: 0.8rem;
+    border-radius: 4px;
+}
+
+/* Compact Badges */
+.badge-compact {
+    padding: 0.2rem 0.5rem;
+    font-size: 0.75rem;
+    border-radius: 8px;
+}
+
+/* Compact Forms */
+.form-compact .form-control {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.9rem;
+}
+
+.form-compact .form-label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+}
+
+/* Compact Action Buttons */
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .page-header {
+        padding: 0.75rem 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .page-header h1 {
+        font-size: 1.25rem;
+    }
+    
+    .page-header p {
+        font-size: 0.8rem;
+    }
+    
+    .table-container {
+        font-size: 0.8rem;
+    }
+    
+    .table-container thead th,
+    .table-container tbody td {
+        padding: 0.5rem 0.25rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block sidebar %}
+<!-- Sidebar Navigation -->
+<nav class="sidebar d-none d-md-block">
+    <h2 class="sidebar-title text-center mb-4">ROCK SAMPLE INDEX</h2>
+    <ul class="nav-menu list-unstyled">
+        <li class="nav-item mb-2">
+            <a href="{{ url_for('admin_dashboard') }}" class="nav-link {% if request.endpoint == 'admin_dashboard' %}active{% endif %} d-flex align-items-center p-3 rounded">
+                <i class="bi bi-grid-3x3-gap-fill nav-icon me-3"></i>
+                DASHBOARD
+            </a>
+        </li>
+        <li class="nav-item mb-2">
+            <a href="{{ url_for('admin_rock_list') }}" class="nav-link {% if request.endpoint in ['admin_rock_list', 'admin_rock_detail'] or request.path.startswith('/admin/rock-list') or request.path.startswith('/admin/rock-detail') %}active{% endif %} d-flex align-items-center p-3 rounded" 
+               {% if request.endpoint in ['admin_rock_list', 'admin_rock_detail'] or request.path.startswith('/admin/rock-list') or request.path.startswith('/admin/rock-detail') %}style="background: rgba(255, 255, 255, 0.3) !important; font-weight: 700 !important; color: white !important; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;"{% endif %}>
+                <i class="bi bi-list-ul nav-icon me-3"></i>
+                ROCK SAMPLES
+            </a>
+        </li>
+        <li class="nav-item mb-2">
+            <a href="{{ url_for('admin_add_rock') }}" class="nav-link {% if request.endpoint == 'admin_add_rock' %}active{% endif %} d-flex align-items-center p-3 rounded">
+                <i class="bi bi-plus-circle-fill nav-icon me-3"></i>
+                ADD ROCK
+            </a>
+        </li>
+        <li class="nav-item mb-2">
+            <a href="{{ url_for('admin_map') }}" class="nav-link {% if request.endpoint == 'admin_map' %}active{% endif %} d-flex align-items-center p-3 rounded">
+                <i class="bi bi-map-fill nav-icon me-3"></i>
+                MAP
+            </a>
+        </li>
+        <li class="nav-item mb-2">
+            <a href="{{ url_for('admin_activity_logs') }}" class="nav-link {% if request.endpoint == 'admin_activity_logs' %}active{% endif %} d-flex align-items-center p-3 rounded">
+                <i class="bi bi-clock-history nav-icon me-3"></i>
+                ACTIVITY LOGS
+            </a>
+        </li>
+        <li class="nav-item mb-2">
+            <a href="{{ url_for('admin_archives') }}" class="nav-link {% if request.endpoint == 'admin_archives' %}active{% endif %} d-flex align-items-center p-3 rounded">
+                <i class="bi bi-archive-fill nav-icon me-3"></i>
+                ARCHIVES
+            </a>
+        </li>
+        <li class="nav-item mb-2">
+            <a href="{{ url_for('admin_manage_users') }}" class="nav-link {% if request.endpoint == 'admin_manage_users' %}active{% endif %} d-flex align-items-center p-3 rounded">
+                <i class="bi bi-people-fill nav-icon me-3"></i>
+                MANAGE USERS
+            </a>
+        </li>
+        <li class="nav-item mb-2">
+            <a href="{{ url_for('admin_settings') }}" class="nav-link {% if request.endpoint == 'admin_settings' %}active{% endif %} d-flex align-items-center p-3 rounded">
+                <i class="bi bi-gear-fill nav-icon me-3"></i>
+                SETTINGS
+            </a>
+        </li>
+        <li class="nav-item mb-2">
+            <a href="{{ url_for('logout') }}" class="nav-link d-flex align-items-center p-3 rounded">
+                <i class="bi bi-box-arrow-right nav-icon me-3"></i>
+                LOGOUT
+            </a>
+        </li>
+    </ul>
+</nav>
+
+<!-- Bootstrap Offcanvas Sidebar for Mobile -->
+<div class="offcanvas offcanvas-start d-md-none" tabindex="-1" id="sidebarOffcanvas" aria-labelledby="sidebarOffcanvasLabel">
+    <div class="offcanvas-header" style="background: #8B0000; color: white;">
+        <h5 class="offcanvas-title fst-italic fw-bold" id="sidebarOffcanvasLabel">ROCK SAMPLE INDEX</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body p-0" style="background: #8B0000; color: white;">
+        <ul class="nav-menu list-unstyled m-0 p-0">
+            <li class="nav-item mb-2">
+                <a href="{{ url_for('admin_dashboard') }}" class="nav-link {% if request.endpoint == 'admin_dashboard' %}active{% endif %} d-flex align-items-center p-3 rounded">
+                    <i class="bi bi-grid-3x3-gap-fill nav-icon me-3"></i>
+                    DASHBOARD
+                </a>
+            </li>
+            <li class="nav-item mb-2">
+                <a href="{{ url_for('admin_rock_list') }}" class="nav-link {% if request.endpoint in ['admin_rock_list', 'admin_rock_detail'] or request.path.startswith('/admin/rock-list') or request.path.startswith('/admin/rock-detail') %}active{% endif %} d-flex align-items-center p-3 rounded"
+                   {% if request.endpoint in ['admin_rock_list', 'admin_rock_detail'] or request.path.startswith('/admin/rock-list') or request.path.startswith('/admin/rock-detail') %}style="background: rgba(255, 255, 255, 0.3) !important; font-weight: 700 !important; color: white !important; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;"{% endif %}>
+                    <i class="bi bi-list-ul nav-icon me-3"></i>
+                    ROCK SAMPLES
+                </a>
+            </li>
+            <li class="nav-item mb-2">
+                <a href="{{ url_for('admin_add_rock') }}" class="nav-link {% if request.endpoint == 'admin_add_rock' %}active{% endif %} d-flex align-items-center p-3 rounded">
+                    <i class="bi bi-plus-circle-fill nav-icon me-3"></i>
+                    ADD ROCK
+                </a>
+            </li>
+            <li class="nav-item mb-2">
+                <a href="{{ url_for('admin_map') }}" class="nav-link {% if request.endpoint == 'admin_map' %}active{% endif %} d-flex align-items-center p-3 rounded">
+                    <i class="bi bi-map-fill nav-icon me-3"></i>
+                    MAP
+                </a>
+            </li>
+            <li class="nav-item mb-2">
+                <a href="{{ url_for('admin_activity_logs') }}" class="nav-link {% if request.endpoint == 'admin_activity_logs' %}active{% endif %} d-flex align-items-center p-3 rounded">
+                    <i class="bi bi-clock-history nav-icon me-3"></i>
+                    ACTIVITY LOGS
+                </a>
+            </li>
+            <li class="nav-item mb-2">
+                <a href="{{ url_for('admin_archives') }}" class="nav-link {% if request.endpoint == 'admin_archives' %}active{% endif %} d-flex align-items-center p-3 rounded">
+                    <i class="bi bi-archive-fill nav-icon me-3"></i>
+                    ARCHIVES
+                </a>
+            </li>
+            <li class="nav-item mb-2">
+                <a href="{{ url_for('admin_manage_users') }}" class="nav-link {% if request.endpoint == 'admin_manage_users' %}active{% endif %} d-flex align-items-center p-3 rounded">
+                    <i class="bi bi-people-fill nav-icon me-3"></i>
+                    MANAGE USERS
+                </a>
+            </li>
+            <li class="nav-item mb-2">
+                <a href="{{ url_for('admin_settings') }}" class="nav-link {% if request.endpoint == 'admin_settings' %}active{% endif %} d-flex align-items-center p-3 rounded">
+                    <i class="bi bi-gear-fill nav-icon me-3"></i>
+                    SETTINGS
+                </a>
+            </li>
+            <li class="nav-item mb-2">
+                <a href="{{ url_for('logout') }}" class="nav-link d-flex align-items-center p-3 rounded">
+                    <i class="bi bi-box-arrow-right nav-icon me-3"></i>
+                    LOGOUT
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+<!-- Extra JavaScript for specific pages -->
+</script>
+{% endblock %}
+
