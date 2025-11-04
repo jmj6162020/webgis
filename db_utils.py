@@ -17,7 +17,7 @@ load_dotenv()
 # ============================================================================
 
 DB_CONFIG = {
-    'host': os.environ.get('DB_HOST', 'homeworkquest.site'),
+    'host': os.environ.get('DB_HOST', 'ftp://homeworkquest.site'),
     'port': int(os.environ.get('DB_PORT', 3306)),
     'user': os.environ.get('DB_USER', 'u178238182_webgiscaps'),
     'password': os.environ.get('DB_PASSWORD', 'Webgis123456'),

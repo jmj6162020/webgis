@@ -17,7 +17,7 @@ class Config:
     DEBUG = os.environ.get('FLASK_DEBUG', 'True').lower() == 'true'
     
     # Database Configuration
-    DB_HOST = os.environ.get('DB_HOST', 'homeworkquest.site') 
+    DB_HOST = os.environ.get('DB_HOST', 'ftp://homeworkquest.site') 
     DB_PORT = int(os.environ.get('DB_PORT', 3306))
     DB_USER = os.environ.get('DB_USER', 'u178238182_webgiscaps')
     DB_PASSWORD = os.environ.get('DB_PASSWORD', 'Webgis123456')  
