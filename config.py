@@ -22,7 +22,7 @@ class Config:
     DB_USER = os.environ.get('DB_USER', 'u178238182_webgiscaps')
     DB_PASSWORD = os.environ.get('DB_PASSWORD', 'Webgis123456')
     DB_NAME = os.environ.get('DB_NAME', 'u178238182_webgis')
-
+    
     # File Upload Configuration
     MAX_CONTENT_LENGTH = int(os.environ.get('MAX_FILE_SIZE', 16 * 1024 * 1024))  # 16MB default
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
