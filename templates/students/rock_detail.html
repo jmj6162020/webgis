@@ -4,41 +4,54 @@
 
 {% block page_styles %}
 <style>
-/* Rock Detail Page Styles */
+/* Rock Detail Page Styles (compact like Map) */
 .page-header {
-    background: linear-gradient(135deg, #8B0000 0%, #a00000 100%);
-    color: white;
-    padding: 2rem;
-    border-radius: 12px;
-    margin-bottom: 2rem;
-    box-shadow: 0 4px 15px rgba(139, 0, 0, 0.2);
+    background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-dark) 100%);
+    color: var(--header-text);
+    padding: 1rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 8px var(--shadow-color);
+}
+
+.page-header h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.page-header p {
+    font-size: 0.9rem;
+    margin: 0;
+    opacity: 0.9;
 }
 
 .info-card {
-    background: white;
-    border-radius: 12px;
-    padding: 2rem;
-    margin-bottom: 2rem;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    background: var(--surface-bg);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 8px var(--shadow-color);
+    border: 1px solid var(--border-color);
 }
 
 .info-card h2 {
-    color: #8B0000;
+    color: var(--brand-primary);
     font-size: 1.5rem;
     font-weight: 600;
-    margin-bottom: 1.5rem;
-    padding-bottom: 0.75rem;
-    border-bottom: 2px solid #8B0000;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--brand-primary);
 }
 
 .info-label {
     font-weight: 600;
-    color: #666;
+    color: var(--text-muted);
     margin-bottom: 0.25rem;
 }
 
 .info-value {
-    color: #333;
+    color: var(--text-primary);
     margin-bottom: 1rem;
 }
 
@@ -70,6 +83,7 @@
     overflow: hidden;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     margin-bottom: 0.5rem;
+    border: 2px solid var(--border-color);
 }
 
 .image-container img {
@@ -77,15 +91,40 @@
     height: auto;
     cursor: pointer;
     transition: transform 0.3s ease;
+    border-radius: 6px;
 }
 
 .image-container img:hover {
     transform: scale(1.02);
 }
+
+/* Dark mode refinements for image borders and filenames */
+body.theme-dark .image-container {
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.45);
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+body.theme-dark .info-card small,
+body.theme-dark .info-card .text-muted {
+    color: #ffffff !important;
+}
 </style>
 {% endblock %}
 
 {% block content %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="mb-3">
+        {% for category, message in messages %}
+            <div class="alert {% if category in ['success'] %}alert-success{% elif category in ['error','danger'] %}alert-danger{% else %}alert-info{% endif %} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+{% endwith %}
+
 <!-- Page Header -->
 <div class="page-header">
     <div class="d-flex justify-content-between align-items-center">
@@ -142,6 +181,16 @@
             </div>
             <div class="row">
                 <div class="col-6 mb-3">
+                    <div class="info-label">Barangay</div>
+                    <div class="info-value">{{ rock.barangay or 'N/A' }}</div>
+                </div>
+                <div class="col-6 mb-3">
+                    <div class="info-label">Province</div>
+                    <div class="info-value">{{ rock.province or 'N/A' }}</div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6 mb-3">
                     <div class="info-label">Latitude</div>
                     <div class="info-value">{{ rock.latitude or 'N/A' }}</div>
                 </div>
@@ -149,10 +198,6 @@
                     <div class="info-label">Longitude</div>
                     <div class="info-value">{{ rock.longitude or 'N/A' }}</div>
                 </div>
-            </div>
-            <div>
-                <div class="info-label">Outcrop ID</div>
-                <div class="info-value">{{ rock.outcrop_id or 'N/A' }}</div>
             </div>
         </div>
 
@@ -222,9 +267,19 @@
 
 <!-- Action Buttons -->
 <div class="text-center mt-4">
+    {% if rock.status == 'pending' %}
+        <a href="{{ url_for('student_pending_verifications') }}" class="btn btn-secondary btn-lg">
+            <i class="bi bi-arrow-left me-2"></i>Back to Pending Verifications
+        </a>
+    {% elif rock.status == 'verified' %}
+        <a href="{{ url_for('student_view_rocks') }}" class="btn btn-secondary btn-lg">
+            <i class="bi bi-arrow-left me-2"></i>Back to Verified Rocks
+        </a>
+    {% else %}
     <a href="{{ url_for('student_view_rocks') }}" class="btn btn-secondary btn-lg">
         <i class="bi bi-arrow-left me-2"></i>Back to My Rocks
     </a>
+    {% endif %}
 </div>
 
 <!-- Image Modal -->

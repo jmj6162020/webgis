@@ -6,8 +6,8 @@
 <style>
 /* Manage Users Page Compact Styles */
 .btn-add-user {
-    background: #8B0000;
-    color: white;
+    background: var(--brand-primary);
+    color: var(--header-text);
     border: none;
     padding: 0.5rem 1rem;
     font-weight: 600;
@@ -17,9 +17,9 @@
 }
 
 .btn-add-user:hover {
-    background: #a00000;
+    background: var(--brand-primary-dark);
     transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(139, 0, 0, 0.3);
+    box-shadow: 0 2px 8px var(--shadow-color);
 }
 
 .role-badge {
@@ -86,9 +86,15 @@
 }
 
 /* Modal Styles */
+.modal-content {
+    background: var(--surface-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 8px 24px var(--shadow-color);
+}
 .modal-header {
-    background: #8B0000;
-    color: white;
+    background: var(--brand-primary);
+    color: var(--header-text);
     padding: 1rem 1.5rem;
 }
 
@@ -103,27 +109,44 @@
 
 .modal-body .form-label {
     font-weight: 600;
-    color: #333;
+    color: var(--text-primary);
     font-size: 0.9rem;
     margin-bottom: 0.5rem;
 }
 
 .modal-body .form-control {
     border-radius: 6px;
-    border: 1px solid #dee2e6;
+    border: 1px solid var(--border-color);
     padding: 0.75rem;
     font-size: 0.9rem;
     margin-bottom: 0.5rem;
+    background: var(--surface-bg);
+    color: var(--text-primary);
 }
 
 .modal-body .form-control:focus {
-    border-color: #8B0000;
+    border-color: var(--brand-primary);
     box-shadow: 0 0 0 0.2rem rgba(139, 0, 0, 0.25);
+}
+
+.modal-body .form-text {
+    color: var(--text-muted);
+}
+
+.input-group .btn.btn-outline-secondary {
+    background: var(--surface-alt-bg);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+.input-group .btn.btn-outline-secondary:hover {
+    background: var(--surface-bg);
+    color: var(--text-primary);
+    border-color: var(--brand-primary);
 }
 
 .modal-footer {
     padding: 1rem 1.5rem;
-    border-top: 1px solid #dee2e6;
+    border-top: 1px solid var(--border-color);
 }
 
 .modal-footer .btn {
@@ -158,7 +181,7 @@
 
 .form-text {
     font-size: 0.8rem;
-    color: #6c757d;
+    color: var(--text-muted);
     margin-top: 0.25rem;
     margin-bottom: 0.5rem;
 }
@@ -169,7 +192,7 @@
 
 .form-check-label {
     font-size: 0.9rem;
-    color: #333;
+    color: var(--text-primary);
     margin-left: 0.5rem;
 }
 
@@ -178,7 +201,7 @@
 }
 
 .input-group .btn {
-    border-color: #dee2e6;
+    border-color: var(--border-color);
     padding: 0.75rem 0.5rem;
      cursor: pointer;
     z-index: 10;
@@ -186,8 +209,8 @@
 }
 
 .input-group .btn:hover {
-    background-color: #e9ecef;
-    border-color: #dee2e6;
+    background-color: var(--surface-alt-bg);
+    border-color: var(--border-color);
 }
 
 .input-group .btn:focus {
@@ -201,11 +224,11 @@
 
 /* Filters UI */
 .filters-section {
-    border: 1px solid #e9ecef;
+    border: 1px solid var(--border-color);
     border-radius: 10px;
-    background: #ffffff;
+    background: var(--surface-bg);
     padding: 1rem;
-    box-shadow: 0 2px 8px rgba(0,0,0,.06);
+    box-shadow: 0 2px 8px var(--shadow-color);
 }
 .filters-header {
     display: flex;
@@ -220,10 +243,22 @@
     margin: 0;
     font-size: 1rem;
     font-weight: 600;
-    color: #8B0000;
+    color: var(--brand-primary);
 }
-.btn-apply { background: #8B0000; border: none; }
-.btn-apply:hover { background: #a00000; }
+.btn-apply { background: var(--brand-primary); border: none; }
+.btn-apply:hover { background: var(--brand-primary-dark); }
+
+/* Dark mode table cells */
+body.theme-dark .users-table {
+    background-color: #000000;
+    color: #ffffff;
+}
+body.theme-dark .users-table > :not(caption) > * > * {
+    background-color: #000000;
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: none;
+}
 
 @media (max-width: 768px) {
     .page-header h1 {
@@ -301,6 +336,19 @@
 {% endblock %}
 
 {% block content %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="mb-3">
+        {% for category, message in messages %}
+            <div class="alert {% if category in ['success'] %}alert-success{% elif category in ['error','danger'] %}alert-danger{% else %}alert-info{% endif %} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+{% endwith %}
+
 <!-- Page Header -->
 <div class="page-header">
     <h1><i class="bi bi-people-fill me-2"></i>Manage Users</h1>

@@ -289,11 +289,18 @@
                 <form method="post" action="{{ url_for('signup') }}" id="signupForm" novalidate>
                     
                     
-                    <!-- Full Name Field -->
+                    <!-- First Name Field -->
                     <div class="form-floating">
-                        <input type="text" class="form-control" id="fullname" name="fullname" placeholder="Full Name (Student/Faculty)" required>
-                        <label for="fullname">Your fullname *</label>
-                        <div class="form-error" id="fullname-error"></div>
+                        <input type="text" class="form-control" id="first_name" name="first_name" placeholder="First Name" required>
+                        <label for="first_name">First name *</label>
+                        <div class="form-error" id="first_name-error"></div>
+                    </div>
+
+                    <!-- Last Name Field -->
+                    <div class="form-floating">
+                        <input type="text" class="form-control" id="last_name" name="last_name" placeholder="Last Name" required>
+                        <label for="last_name">Last name *</label>
+                        <div class="form-error" id="last_name-error"></div>
                     </div>
 
                     <!-- Student ID Field -->
@@ -399,16 +406,28 @@
                 field.classList.remove('is-invalid', 'is-valid');
             });
             
-            // Validate full name
-            const fullname = document.getElementById('fullname');
-            if (!fullname.value.trim()) {
-                showError('fullname', 'Full name is required');
+            // Validate first name
+            const firstName = document.getElementById('first_name');
+            if (!firstName.value.trim()) {
+                showError('first_name', 'First name is required');
                 isValid = false;
-            } else if (fullname.value.trim().length < 2) {
-                showError('fullname', 'Full name must be at least 2 characters');
+            } else if (firstName.value.trim().length < 2) {
+                showError('first_name', 'First name must be at least 2 characters');
                 isValid = false;
             } else {
-                fullname.classList.add('is-valid');
+                firstName.classList.add('is-valid');
+            }
+
+            // Validate last name
+            const lastName = document.getElementById('last_name');
+            if (!lastName.value.trim()) {
+                showError('last_name', 'Last name is required');
+                isValid = false;
+            } else if (lastName.value.trim().length < 2) {
+                showError('last_name', 'Last name must be at least 2 characters');
+                isValid = false;
+            } else {
+                lastName.classList.add('is-valid');
             }
 
             // Validate student id

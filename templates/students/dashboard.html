@@ -8,10 +8,10 @@
 .profile-picture {
     width: 60px;
     height: 60px;
-    background: white;
-    color: #8B0000;
+    background: var(--surface-bg);
+    color: var(--brand-primary);
     font-weight: bold;
-    border: 2px solid #8B0000;
+    border: 2px solid var(--brand-primary);
 }
 
 .welcome-section {
@@ -24,8 +24,8 @@
 }
 
 .notification-bar {
-    background: #6c757d;
-    color: white;
+    background: rgba(108, 117, 125, 0.85);
+    color: var(--header-text);
     padding: 0.75rem 1rem;
     border-radius: 0.375rem;
     font-size: 0.9rem;
@@ -33,14 +33,14 @@
 
 /* Stats Cards - Compact */
 .stat-card {
-    background: #8B0000;
+    background: var(--brand-primary);
     box-shadow: 0 2px 8px rgba(139, 0, 0, 0.2);
     padding: 1rem;
 }
 
 /* Chart Section */
 .chart-section {
-    background: white;
+    background: var(--surface-bg);
     border-radius: 8px;
     padding: 1rem;
     margin-bottom: 1rem;
@@ -48,7 +48,7 @@
 }
 
 .chart-section h3 {
-    color: #8B0000;
+    color: var(--brand-primary);
     font-weight: 600;
     margin-bottom: 0.75rem;
     font-size: 1rem;
@@ -75,7 +75,7 @@
 }
 
 .stat-icon i {
-    color: white;
+    color: var(--header-text);
     font-size: 1.2rem;
 }
 
@@ -92,15 +92,16 @@
 
 /* Recent Samples Section - Compact */
 .recent-rocks {
-    background: white;
+    background: var(--surface-bg);
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--border-color);
 }
 
 .section-title {
-    background: #8B0000;
-    color: white;
+    background: var(--brand-primary);
+    color: var(--header-text);
     font-size: 1.1rem;
     font-weight: 600;
     padding: 0.75rem 1rem;
@@ -114,8 +115,8 @@
 }
 
 .recent-samples-table thead th {
-    background: #8B0000 !important;
-    color: white;
+    background: #000000;
+    color: #ffffff;
     white-space: nowrap;
     text-align: center;
     padding: 0.75rem 0.5rem;
@@ -129,12 +130,61 @@
     text-align: center;
     vertical-align: middle;
     padding: 0.75rem 0.5rem;
-    border-bottom: 1px solid #dee2e6;
+    border-bottom: 1px solid var(--border-color);
     font-size: 0.85rem;
+    color: var(--text-primary);
 }
 
 .recent-samples-table tbody tr:hover {
-    background-color: #f8f9fa;
+    background-color: var(--surface-alt-bg);
+}
+
+body.theme-light .recent-samples-table thead th {
+    background: #f8f9fa;
+    color: #212529;
+}
+
+body.theme-light .recent-samples-table tbody td {
+    color: #212529;
+}
+
+body.theme-dark .recent-samples-table thead th {
+    background: #000000 !important;
+    color: #ffffff;
+}
+
+body.theme-dark .recent-samples-table tbody td {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+}
+
+body.theme-dark .recent-samples-table tbody tr:hover {
+    background-color: #111111;
+}
+
+/* Ensure full dark background for all table cells and empty-state rows */
+body.theme-dark .recent-rocks .table {
+    background-color: #000000;
+    color: #ffffff;
+}
+
+body.theme-dark .recent-rocks .table > :not(caption) > * > * {
+    background-color: #000000;
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: none;
+}
+
+/* Light mode defaults for clarity */
+body.theme-light .recent-rocks .table {
+    background-color: #ffffff;
+    color: #212529;
+}
+
+body.theme-light .recent-rocks .table > :not(caption) > * > * {
+    background-color: #ffffff;
+    color: #212529;
+    border-color: var(--border-color);
 }
 
 .call-to-action {
@@ -241,6 +291,19 @@
 {% endblock %}
 
 {% block content %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="mb-3">
+        {% for category, message in messages %}
+            <div class="alert {% if category in ['success'] %}alert-success{% elif category in ['error','danger'] %}alert-danger{% else %}alert-info{% endif %} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+{% endwith %}
+
 <!-- Welcome Section -->
 <div class="welcome-section mb-3">
     <h1 class="welcome-title text-danger fw-bold mb-2">WELCOME {{ student.first_name.upper() if student and student.first_name else 'ROCKSTAR' }}!</h1>
@@ -281,7 +344,10 @@
 <div class="chart-section">
     <h3><i class="bi bi-bar-chart-fill me-2"></i>Sample Status Overview</h3>
     <div class="chart-container">
-        <canvas id="statusChart"></canvas>
+            <canvas id="statusChart"
+                    data-verified="{{ stats.verified_count|default(0, true) }}"
+                    data-pending="{{ stats.pending_count|default(0, true) }}"
+                    data-rejected="{{ stats.rejected_count|default(0, true) }}"></canvas>
     </div>
 </div>
 
@@ -328,7 +394,7 @@
 
 <!-- Call to Action -->
 <div class="call-to-action text-center py-4 fst-italic text-danger fs-5 fw-medium">
-    Ready for your next field survey?
+    DUKDOK GEOL!⚒
 </div>
 {% endblock %}
 
@@ -339,12 +405,26 @@
 <script>
 // Initialize bar chart when page loads
 document.addEventListener('DOMContentLoaded', function() {
-    const ctx = document.getElementById('statusChart').getContext('2d');
+    const chartCanvas = document.getElementById('statusChart');
+    if (!chartCanvas) {
+        return;
+    }
+
+    const ctx = chartCanvas.getContext('2d');
+    const isDark = (document.documentElement.dataset.theme || 'light') === 'dark';
+    const axisColor = isDark ? '#e2e8f0' : '#666';
+    const gridColor = isDark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.1)';
     
-    // Get data from backend
-    const verifiedCount = {{ stats.verified_count or 0 }};
-    const pendingCount = {{ stats.pending_count or 0 }};
-    const rejectedCount = {{ stats.rejected_count or 0 }};
+    // Get data from backend via data attributes
+    const {
+        verified: verifiedRaw = '0',
+        pending: pendingRaw = '0',
+        rejected: rejectedRaw = '0'
+    } = chartCanvas.dataset;
+
+    const verifiedCount = Number(verifiedRaw) || 0;
+    const pendingCount = Number(pendingRaw) || 0;
+    const rejectedCount = Number(rejectedRaw) || 0;
     
     new Chart(ctx, {
         type: 'bar',
@@ -377,8 +457,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
                 tooltip: {
                     backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                    titleColor: 'white',
-                    bodyColor: 'white',
+                    titleColor: '#ffffff',
+                    bodyColor: '#ffffff',
                     borderColor: '#8B0000',
                     borderWidth: 1,
                     callbacks: {
@@ -393,19 +473,19 @@ document.addEventListener('DOMContentLoaded', function() {
                     beginAtZero: true,
                     ticks: {
                         stepSize: 1,
-                        color: '#666',
+                        color: axisColor,
                         font: {
                             size: 12
                         }
                     },
                     grid: {
-                        color: 'rgba(0, 0, 0, 0.1)',
+                        color: gridColor,
                         drawBorder: false
                     }
                 },
                 x: {
                     ticks: {
-                        color: '#666',
+                        color: axisColor,
                         font: {
                             size: 12,
                             weight: 'bold'

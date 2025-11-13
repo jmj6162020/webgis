@@ -6,12 +6,12 @@
 <style>
 /* Compact page header */
 .page-header {
-    background: #8B0000;
-    color: white;
+    background: var(--brand-primary);
+    color: var(--header-text);
     padding: 1rem;
     border-radius: 6px;
     margin-bottom: 1rem;
-    box-shadow: 0 2px 8px rgba(139, 0, 0, 0.2);
+    box-shadow: 0 2px 8px var(--shadow-color);
 }
 
 .page-header h1 {
@@ -28,9 +28,10 @@
 
 /* Compact archives container */
 .archives-container {
-    background: white;
+    background: var(--surface-bg);
     border-radius: 6px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 6px var(--shadow-color);
+    border: 1px solid var(--border-color);
     overflow: hidden;
 }
 
@@ -39,8 +40,8 @@
 }
 
 .archives-table thead {
-    background: #8B0000;
-    color: white;
+    background: var(--surface-alt-bg);
+    color: var(--text-primary);
 }
 
 .archives-table th {
@@ -53,6 +54,8 @@
     padding: 0.75rem 0.5rem;
     font-size: 0.85rem;
     text-align: center;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-color);
 }
 
 .status-badge {
@@ -82,12 +85,24 @@
 
 .no-archives i {
     font-size: 2rem;
-    color: #6c757d;
+    color: var(--text-muted);
 }
 
 .no-archives h5 {
-    color: #6c757d;
+    color: var(--text-primary);
     margin-top: 1rem;
+}
+
+/* Dark mode: full black table styling */
+body.theme-dark .archives-table {
+    background-color: #000000;
+    color: #ffffff;
+}
+body.theme-dark .archives-table > :not(caption) > * > * {
+    background-color: #000000;
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: none;
 }
 
 /* Mobile responsive */
@@ -134,6 +149,19 @@
 {% endblock %}
 
 {% block content %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="mb-3">
+        {% for category, message in messages %}
+            <div class="alert {% if category in ['success'] %}alert-success{% elif category in ['error','danger'] %}alert-danger{% else %}alert-info{% endif %} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+{% endwith %}
+
 <!-- Page Header -->
 <div class="page-header">
     <h1><i class="bi bi-archive-fill me-2"></i>Archives</h1>

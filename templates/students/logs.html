@@ -6,12 +6,12 @@
 <style>
 /* Logs Page Specific Styles - Compact */
 .page-header {
-    background: #8B0000;
-    color: white;
+    background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-dark) 100%);
+    color: var(--header-text);
     padding: 1rem;
     border-radius: 6px;
     margin-bottom: 1rem;
-    box-shadow: 0 2px 8px rgba(139, 0, 0, 0.2);
+    box-shadow: 0 2px 8px var(--shadow-color);
 }
 
 .page-header h1 {
@@ -28,15 +28,15 @@
 
 /* Compact filters section */
 .filters-section {
-    background: white;
+    background: var(--surface-bg);
     border-radius: 6px;
     padding: 1rem;
     margin-bottom: 1rem;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 6px var(--shadow-color);
 }
 
 .filters-section h3 {
-    color: #8B0000;
+    color: var(--brand-primary);
     font-weight: 600;
     font-size: 1.1rem;
     margin-bottom: 1rem;
@@ -52,11 +52,14 @@
 .form-select {
     font-size: 0.9rem;
     padding: 0.5rem 0.75rem;
+    border-color: var(--border-color);
+    color: var(--text-primary);
+    background-color: var(--surface-bg);
 }
 
 .btn-filter {
-    background: #8B0000;
-    color: white;
+    background: var(--brand-primary);
+    color: var(--header-text);
     border: none;
     padding: 0.5rem 1rem;
     border-radius: 6px;
@@ -64,13 +67,13 @@
 }
 
 .btn-filter:hover {
-    background: #700000;
-    color: white;
+    background: var(--brand-primary-dark);
+    color: var(--header-text);
 }
 
 .btn-secondary {
-    background: #6c757d;
-    color: white;
+    background: rgba(108, 117, 125, 0.85);
+    color: var(--header-text);
     border: none;
     padding: 0.5rem 1rem;
     border-radius: 6px;
@@ -79,25 +82,26 @@
 }
 
 .btn-secondary:hover {
-    background: #5a6268;
-    color: white;
+    background: rgba(108, 117, 125, 0.95);
+    color: var(--header-text);
 }
 
 .logs-container {
-    background: white;
+    background: var(--surface-bg);
     border-radius: 6px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 6px var(--shadow-color);
     overflow: hidden;
 }
 
 .logs-table {
     margin-bottom: 0;
     font-size: 0.9rem;
+    border-color: var(--border-color);
 }
 
 .logs-table thead {
-    background: #8B0000;
-    color: white;
+    background: var(--surface-alt-bg);
+    color: var(--text-primary);
 }
 
 .logs-table th {
@@ -106,17 +110,19 @@
     font-weight: 600;
     border: none;
     font-size: 0.85rem;
+    color: var(--text-primary);
 }
 
 .logs-table td {
     padding: 0.75rem 0.5rem;
     vertical-align: middle;
-    border-bottom: 1px solid #dee2e6;
+    border-bottom: 1px solid var(--border-color);
     font-size: 0.85rem;
+    color: var(--text-primary);
 }
 
 .logs-table tbody tr:hover {
-    background-color: #f8f9fa;
+    background-color: var(--surface-alt-bg);
 }
 
 .status-badge {
@@ -132,6 +138,52 @@
 .no-logs i {
     font-size: 2rem;
     color: #dee2e6;
+}
+
+[data-theme="dark"] .filters-section,
+[data-theme="dark"] .logs-container {
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.45);
+}
+
+[data-theme="dark"] .logs-table thead {
+    background: #000000;
+    color: #ffffff;
+}
+
+[data-theme="dark"] .logs-table th,
+[data-theme="dark"] .logs-table td {
+    color: #ffffff;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="dark"] .logs-table tbody tr:hover {
+    background-color: #111111;
+}
+
+[data-theme="dark"] .filters-section h3 {
+    color: #fef2f2;
+}
+
+[data-theme="dark"] .btn-secondary {
+    background: rgba(148, 163, 184, 0.35);
+    color: #f8fafc;
+}
+
+[data-theme="dark"] .btn-secondary:hover {
+    background: rgba(148, 163, 184, 0.45);
+}
+
+/* Ensure full dark background for all table cells and empty-state rows */
+body.theme-dark .logs-table {
+    background-color: #000000;
+    color: #ffffff;
+}
+
+body.theme-dark .logs-table > :not(caption) > * > * {
+    background-color: #000000;
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: none;
 }
 
 /* Responsive Design */
@@ -198,6 +250,19 @@
 {% endblock %}
 
 {% block content %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="mb-3">
+        {% for category, message in messages %}
+            <div class="alert {% if category in ['success'] %}alert-success{% elif category in ['error','danger'] %}alert-danger{% else %}alert-info{% endif %} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+{% endwith %}
+
 <!-- Page Header -->
 <div class="page-header">
     <h1><i class="bi bi-list-ul me-3"></i>My Activity Logs</h1>

@@ -283,18 +283,28 @@ def get_current_user():
     Get the full current user data from database
     
     Returns:
-        dict: User data or None if not authenticated
+        dict: User data or None if not authenticated or on database error
     """
     if not is_authenticated():
         return None
     
-    from db_utils import get_db_connection, fetch_one, close_connection
-    
-    user_id = session.get('user_id')
-    conn = get_db_connection()
-    user = fetch_one(conn, "SELECT * FROM users WHERE user_id = %s", (user_id,))
-    close_connection(conn)
-    return user
+    try:
+        from db_utils import get_db_connection, fetch_one, close_connection
+        
+        user_id = session.get('user_id')
+        if not user_id:
+            return None
+            
+        conn = get_db_connection()
+        user = fetch_one(conn, "SELECT * FROM users WHERE user_id = %s", (user_id,))
+        close_connection(conn)
+        return user
+    except Exception as e:
+        # Database connection failed - log and return None to prevent crashes
+        print(f"Database error getting current user: {e}")
+        import traceback
+        traceback.print_exc()
+        return None
 
 def get_session_context():
     """

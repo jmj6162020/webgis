@@ -6,44 +6,45 @@
 <style>
 /* Settings Page Compact Styles */
 .settings-section {
-    background: white;
+    background: var(--surface-bg);
     border-radius: 8px;
     padding: 1rem;
     margin-bottom: 1rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px var(--shadow-color);
+    border: 1px solid var(--border-color);
 }
 
 .settings-section h2 {
-    color: #8B0000;
+    color: var(--brand-primary);
     font-size: 1rem;
     font-weight: 600;
     margin-bottom: 0.75rem;
     padding-bottom: 0.5rem;
-    border-bottom: 2px solid #8B0000;
+    border-bottom: 2px solid var(--brand-primary);
 }
 
 .form-label {
     font-weight: 600;
-    color: #333;
+    color: var(--text-primary);
     margin-bottom: 0.25rem;
     font-size: 0.85rem;
 }
 
 .form-control, .form-select {
     border-radius: 6px;
-    border: 1px solid #dee2e6;
+    border: 1px solid var(--border-color);
     padding: 0.5rem 0.75rem;
     font-size: 0.85rem;
 }
 
 .form-control:focus, .form-select:focus {
-    border-color: #8B0000;
+    border-color: var(--brand-primary);
     box-shadow: 0 0 0 0.2rem rgba(139, 0, 0, 0.25);
 }
 
 .btn-save {
-    background: #8B0000;
-    color: white;
+    background: var(--brand-primary);
+    color: var(--header-text);
     border: none;
     padding: 0.5rem 1.25rem;
     font-weight: 600;
@@ -53,7 +54,7 @@
 }
 
 .btn-save:hover {
-    background: #a00000;
+    background: var(--brand-primary-dark);
     transform: translateY(-1px);
     box-shadow: 0 3px 10px rgba(139, 0, 0, 0.3);
 }
@@ -70,6 +71,11 @@
 
 .mb-3 {
     margin-bottom: 0.75rem !important;
+}
+
+.theme-toggle-card .form-check-label {
+    font-weight: 600;
+    font-size: 0.9rem;
 }
 
 @media (max-width: 768px) {
@@ -107,6 +113,19 @@
 {% endblock %}
 
 {% block content %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="mb-3">
+        {% for category, message in messages %}
+            <div class="alert {% if category in ['success'] %}alert-success{% elif category in ['error','danger'] %}alert-danger{% else %}alert-info{% endif %} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+{% endwith %}
+
 <!-- Page Header -->
 <div class="page-header">
     <h1><i class="bi bi-gear-fill me-2"></i>System Settings</h1>
@@ -118,6 +137,43 @@
     <i class="bi bi-check-circle-fill me-2"></i>{{ success_message }}
 </div>
 {% endif %}
+
+<!-- Profile Photo -->
+<div class="settings-section">
+    <h2><i class="bi bi-image me-2"></i>Profile Photo</h2>
+    <div class="row align-items-center">
+        <div class="col-auto">
+            <div class="profile-photo-wrapper me-3">
+                <span class="profile-photo-fallback"></span>
+                <img src="{{ url_for('serve_user_photo', user_id=user.user_id) }}" alt="Profile Photo" class="profile-photo-img"
+                     onerror="this.style.display='none'; this.previousElementSibling.style.display='block';"
+                     onload="this.style.display='block'; this.previousElementSibling.style.display='none';">
+            </div>
+        </div>
+        <div class="col">
+            <form method="POST" action="{{ url_for('admin_upload_photo') }}" enctype="multipart/form-data" class="d-flex gap-2 align-items-center">
+                <input class="form-control" type="file" name="profile_photo" accept="image/*" required>
+                <button type="submit" class="btn btn-save"><i class="bi bi-upload me-2"></i>Upload</button>
+            </form>
+            <small class="text-muted d-block mt-2">Max size 16MB. JPG, PNG recommended.</small>
+        </div>
+    </div>
+</div>
+
+<!-- Display Preferences -->
+<div class="settings-section">
+    <h2><i class="bi bi-brightness-high-fill me-2"></i>Display Preferences</h2>
+    <div class="theme-toggle-card">
+        <div class="flex-grow-1">
+            <p class="mb-1 fw-semibold">Interface theme</p>
+        </div>
+        <div class="form-check form-switch m-0">
+            <input class="form-check-input" type="checkbox" role="switch" id="adminThemeToggle"
+                   data-theme-toggle data-label-light="Night mode" data-label-dark="Day mode" aria-label="Toggle night mode">
+            <label class="form-check-label mt-1 ms-2" for="adminThemeToggle" data-theme-toggle-label>Night mode</label>
+        </div>
+    </div>
+</div>
 
 <!-- Profile Settings -->
 <div class="settings-section">

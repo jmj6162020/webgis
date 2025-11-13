@@ -6,12 +6,12 @@
 <style>
 /* Pending Verifications Page Specific Styles - Compact */
 .page-header {
-    background: #8B0000;
-    color: white;
+    background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-dark) 100%);
+    color: var(--header-text);
     padding: 1rem;
     border-radius: 6px;
     margin-bottom: 1rem;
-    box-shadow: 0 2px 8px rgba(139, 0, 0, 0.2);
+    box-shadow: 0 2px 8px var(--shadow-color);
 }
 
 .page-header h1 {
@@ -27,8 +27,8 @@
 }
 
 .info-alert {
-    background: #d1ecf1;
-    border: 1px solid #bee5eb;
+    background: rgba(209, 236, 241, 0.9);
+    border: 1px solid rgba(190, 229, 235, 0.9);
     color: #0c5460;
     padding: 0.75rem;
     border-radius: 6px;
@@ -37,20 +37,21 @@
 }
 
 .pending-container {
-    background: white;
+    background: var(--surface-bg);
     border-radius: 6px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 6px var(--shadow-color);
     overflow: hidden;
 }
 
 .pending-table {
     margin-bottom: 0;
     font-size: 0.9rem;
+    border-color: var(--border-color);
 }
 
 .pending-table thead {
-    background: #8B0000;
-    color: white;
+    background: var(--surface-alt-bg);
+    color: var(--text-primary);
 }
 
 .pending-table th {
@@ -59,17 +60,19 @@
     font-weight: 600;
     border: none;
     font-size: 0.85rem;
+    color: var(--text-primary);
 }
 
 .pending-table td {
     padding: 0.75rem 0.5rem;
     vertical-align: middle;
-    border-bottom: 1px solid #dee2e6;
+    border-bottom: 1px solid var(--border-color);
     font-size: 0.85rem;
+    color: var(--text-primary);
 }
 
 .pending-table tbody tr:hover {
-    background-color: #f8f9fa;
+    background-color: var(--surface-alt-bg);
 }
 
 .status-badge {
@@ -90,6 +93,44 @@
 .no-pending i {
     font-size: 2rem;
     color: #dee2e6;
+}
+
+[data-theme="dark"] .pending-container {
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.45);
+}
+
+[data-theme="dark"] .pending-table thead {
+    background: #000000;
+    color: #ffffff;
+}
+
+[data-theme="dark"] .pending-table th,
+[data-theme="dark"] .pending-table td {
+    color: #ffffff;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="dark"] .pending-table tbody tr:hover {
+    background-color: #111111;
+}
+
+[data-theme="dark"] .info-alert {
+    background: rgba(30, 64, 175, 0.12);
+    border-color: rgba(96, 165, 250, 0.35);
+    color: #bfdbfe;
+}
+
+/* Ensure full dark background for all table cells and empty-state rows */
+body.theme-dark .pending-table {
+    background-color: #000000;
+    color: #ffffff;
+}
+
+body.theme-dark .pending-table > :not(caption) > * > * {
+    background-color: #000000;
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: none;
 }
 
 /* Responsive Design */
@@ -136,24 +177,24 @@
 {% endblock %}
 
 {% block content %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="mb-3">
+        {% for category, message in messages %}
+            <div class="alert {% if category in ['success'] %}alert-success{% elif category in ['error','danger'] %}alert-danger{% else %}alert-info{% endif %} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+{% endwith %}
+
 <!-- Page Header -->
 <div class="page-header">
     <h1><i class="bi bi-chat-dots-fill me-3"></i>Pending Verifications</h1>
     <p>Track your rock samples awaiting verification</p>
 </div>
-
-<!-- Flash Messages -->
-{% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-        {% for category, message in messages %}
-            <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
-                <i class="bi bi-{{ 'exclamation-triangle' if category == 'error' else 'check-circle' if category == 'success' else 'info-circle' }} me-2"></i>
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        {% endfor %}
-    {% endif %}
-{% endwith %}
 
 <!-- Info Alert -->
 <div class="info-alert">

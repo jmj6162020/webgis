@@ -6,8 +6,8 @@
 <style>
 /* Admin Dashboard Compact Styles */
 .welcome-banner {
-    background: linear-gradient(135deg, #8B0000 0%, #a00000 100%);
-    color: white;
+    background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-dark) 100%);
+    color: var(--header-text);
     padding: 1rem 1.5rem;
     text-align: center;
     margin-bottom: 1rem;
@@ -52,12 +52,12 @@
 }
 
 .stat-card {
-    background: white;
+    background: var(--surface-bg);
     border-radius: 6px;
     padding: 0.75rem;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 6px var(--shadow-color);
     transition: transform 0.2s ease;
-    border-left: 3px solid #8B0000;
+    border-left: 3px solid var(--brand-primary);
 }
 
 .stat-card:hover {
@@ -67,20 +67,20 @@
 
 .stat-card .stat-icon {
     font-size: 1.2rem;
-    color: #8B0000;
+    color: var(--brand-primary);
     margin-bottom: 0.5rem;
 }
 
 .stat-card .stat-number {
     font-size: 1.1rem;
     font-weight: 700;
-    color: #8B0000;
+    color: var(--header-text);
     margin-bottom: 0.25rem;
 }
 
 .stat-card .stat-label {
     font-size: 0.75rem;
-    color: #666;
+    color: var(--text-muted);
     font-weight: 500;
 }
 
@@ -90,15 +90,15 @@
 }
 
 .summary-card {
-    background: white;
+    background: var(--surface-bg);
     border-radius: 8px;
     padding: 1rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    border-left: 3px solid #8B0000;
+    box-shadow: 0 2px 8px var(--shadow-color);
+    border-left: 3px solid var(--brand-primary);
 }
 
 .summary-card h3 {
-    color: #8B0000;
+    color: var(--header-text);
     font-weight: 600;
     margin-bottom: 0.75rem;
     text-align: center;
@@ -116,20 +116,20 @@
     justify-content: space-between;
     align-items: center;
     padding: 0.5rem;
-    background: #f8f9fa;
+    background: var(--surface-alt-bg);
     border-radius: 6px;
-    border-left: 2px solid #8B0000;
+    border-left: 2px solid var(--brand-primary);
 }
 
 .summary-label {
     font-weight: 500;
-    color: #666;
+    color: var(--text-primary);
     font-size: 0.8rem;
 }
 
 .summary-value {
     font-weight: 700;
-    color: #8B0000;
+    color: var(--header-text);
     font-size: 0.9rem;
 }
 
@@ -142,10 +142,10 @@
 }
 
 .chart-card {
-    background: white;
+    background: var(--surface-bg);
     border-radius: 8px;
     padding: 1.5rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px var(--shadow-color);
     min-height: 450px;
     display: flex;
     flex-direction: column;
@@ -153,7 +153,7 @@
 }
 
 .chart-card h3 {
-    color: #8B0000;
+    color: var(--brand-primary);
     font-weight: 600;
     margin-bottom: 0.75rem;
     text-align: center;
@@ -169,28 +169,55 @@
     justify-content: center;
 }
 
+/* Custom legend to replace Chart.js legend */
+.status-legend {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    margin-top: 0.75rem;
+    color: var(--text-primary);
+}
+.status-legend .legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+}
+.status-legend .dot {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: inline-block;
+    border: 3px solid #ffffff;
+}
+
+[data-theme="dark"] .status-legend {
+    color: var(--header-text);
+}
+
 /* Recent Activity - Compact */
 .activity-section {
-    background: white;
+    background: var(--surface-bg);
     border-radius: 8px;
     padding: 1rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px var(--shadow-color);
     margin-bottom: 0;
 }
 
 /* Recent Activity - Full Width */
 .activity-section-full {
-    background: white;
+    background: var(--surface-bg);
     border-radius: 8px;
     padding: 1rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px var(--shadow-color);
     margin: 1rem 0;
     width: 100%;
 }
 
 .activity-section h3,
 .activity-section-full h3 {
-    color: #8B0000;
+    color: var(--brand-primary);
     font-weight: 600;
     margin-bottom: 0.75rem;
     font-size: 1rem;
@@ -200,7 +227,7 @@
     display: flex;
     align-items: center;
     padding: 0.5rem 0;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .activity-item:last-child {
@@ -356,10 +383,28 @@
 {% endblock %}
 
 {% block content %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="mb-3">
+        {% for category, message in messages %}
+            <div class="alert {% if category in ['success'] %}alert-success{% elif category in ['error','danger'] %}alert-danger{% else %}alert-info{% endif %} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+{% endwith %}
+
 <!-- Welcome Banner -->
 <div class="welcome-banner">
     <h1 class="mb-0">ADMIN DASHBOARD</h1>
     <p class="mb-0">Comprehensive overview of rock sample submissions and system analytics</p>
+</div>
+
+<!-- Call to Action -->
+<div class="text-center py-3 fst-italic text-danger fs-6 fw-medium">
+    DUKDOK GEOL!⚒
 </div>
 
 <!-- Admin Action Buttons -->
@@ -386,6 +431,7 @@
                 <div class="chart-container">
                     <canvas id="statusChart"></canvas>
                 </div>
+                <div id="statusLegend" class="status-legend"></div>
             </div>
         </div>
     </div>
@@ -560,7 +606,21 @@ document.addEventListener('DOMContentLoaded', function() {
     Chart.register(ChartDataLabels);
     // Rock Status Distribution Chart (Pie Chart)
     const statusCtx = document.getElementById('statusChart').getContext('2d');
-    new Chart(statusCtx, {
+    const isDark = (document.documentElement.dataset.theme || 'light') === 'dark';
+    const legendTextColor = isDark ? '#e2e8f0' : '#333';
+    const tooltipTextColor = isDark ? '#e2e8f0' : '#212529';
+    const tooltipBgColor = isDark ? 'rgba(17, 24, 39, 0.95)' : 'rgba(255,255,255,0.95)';
+    // Force Chart.js default text color to match theme (v3+) and v2 fallback
+    if (Chart.defaults) {
+        Chart.defaults.color = legendTextColor; // v3+
+        if (Chart.defaults.plugins && Chart.defaults.plugins.legend && Chart.defaults.plugins.legend.labels) {
+            Chart.defaults.plugins.legend.labels.color = legendTextColor; // v3+
+        }
+        if (Chart.defaults.global) {
+            Chart.defaults.global.defaultFontColor = legendTextColor; // v2
+        }
+    }
+    const statusChart = new Chart(statusCtx, {
         type: 'pie',
         data: {
             labels: ['Verified', 'Pending', 'Rejected'],
@@ -583,35 +643,11 @@ document.addEventListener('DOMContentLoaded', function() {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-                legend: {
-                    position: 'bottom',
-                    labels: {
-                        padding: 20,
-                        usePointStyle: true,
-                        generateLabels: function(chart) {
-                            const data = chart.data;
-                            if (data.labels.length && data.datasets.length) {
-                                const dataset = data.datasets[0];
-                                const total = dataset.data.reduce((a, b) => a + b, 0);
-                                return data.labels.map((label, i) => {
-                                    const value = dataset.data[i];
-                                    const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
-                                    return {
-                                        text: `${label}: ${value} (${percentage}%)`,
-                                        fillStyle: dataset.backgroundColor[i],
-                                        strokeStyle: dataset.borderColor || '#fff',
-                                        lineWidth: dataset.borderWidth || 0,
-                                        pointStyle: 'circle',
-                                        hidden: false,
-                                        index: i
-                                    };
-                                });
-                            }
-                            return [];
-                        }
-                    }
-                },
+                legend: { display: false },
                 tooltip: {
+                    titleColor: tooltipTextColor,
+                    bodyColor: tooltipTextColor,
+                    backgroundColor: tooltipBgColor,
                     callbacks: {
                         label: function(context) {
                             const total = context.dataset.data.reduce((a, b) => a + b, 0);
@@ -636,6 +672,26 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
+
+    // Build custom legend content with white text in dark mode
+    try {
+        const legendEl = document.getElementById('statusLegend');
+        if (legendEl && statusChart && statusChart.data && statusChart.data.datasets.length) {
+            const dataset = statusChart.data.datasets[0];
+            const labels = statusChart.data.labels || [];
+            const total = dataset.data.reduce((a, b) => a + b, 0);
+            const parts = labels.map((label, i) => {
+                const value = dataset.data[i] || 0;
+                const percent = total > 0 ? ((value / total) * 100).toFixed(1) : '0.0';
+                const color = dataset.backgroundColor[i];
+                return '<span class=\"legend-item\"><span class=\"dot\" style=\"background:' + color + '\"></span>' +
+                       label + ': ' + value + ' (' + percent + '%)</span>';
+            });
+            legendEl.innerHTML = parts.join('');
+        }
+    } catch (e) {
+        console.warn('Failed to render custom legend', e);
+    }
 
 
     // Add animation to stat cards

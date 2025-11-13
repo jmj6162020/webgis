@@ -2,53 +2,54 @@
 
 {% block sidebar %}
 <!-- Sidebar Navigation -->
+{% set active_nav_override = active_nav if active_nav is defined else None %}
 <nav class="sidebar d-none d-md-block">
     <h2 class="sidebar-title text-center mb-4">ROCK SAMPLE INDEX</h2>
     <ul class="nav-menu list-unstyled">
         <li class="nav-item mb-2">
-            <a href="{{ url_for('student_dashboard') }}" class="nav-link {% if request.endpoint == 'student_dashboard' %}active{% endif %} d-flex align-items-center p-3 rounded">
+            <a href="{{ url_for('student_dashboard') }}" class="nav-link {% if (active_nav_override is none and request.endpoint == 'student_dashboard') or active_nav_override == 'student_dashboard' %}active{% endif %} d-flex align-items-center p-3 rounded">
                 <i class="bi bi-grid-3x3-gap-fill nav-icon me-3"></i>
                 DASHBOARD
             </a>
         </li>
         <li class="nav-item mb-2">
-            <a href="{{ url_for('student_add_rock') }}" class="nav-link {% if request.endpoint == 'student_add_rock' %}active{% endif %} d-flex align-items-center p-3 rounded">
+            <a href="{{ url_for('student_add_rock') }}" class="nav-link {% if (active_nav_override is none and request.endpoint == 'student_add_rock') or active_nav_override == 'student_add_rock' %}active{% endif %} d-flex align-items-center p-3 rounded">
                 <i class="bi bi-plus-circle-fill nav-icon me-3"></i>
-                ADD ROCK
+                ADD SAMPLE
             </a>
         </li>
         <li class="nav-item mb-2">
-            <a href="{{ url_for('student_view_rocks') }}" class="nav-link {% if request.endpoint in ['student_view_rocks', 'student_rock_detail'] %}active{% endif %} d-flex align-items-center p-3 rounded">
+            <a href="{{ url_for('student_view_rocks') }}" class="nav-link {% if (active_nav_override is none and request.endpoint in ['student_view_rocks', 'student_rock_detail']) or active_nav_override == 'student_view_rocks' %}active{% endif %} d-flex align-items-center p-3 rounded">
                 <i class="bi bi-eye-fill nav-icon me-3"></i>
-                VIEW ROCKS
+                VIEW SAMPLES
             </a>
         </li>
         <li class="nav-item mb-2">
-            <a href="{{ url_for('student_map') }}" class="nav-link {% if request.endpoint == 'student_map' %}active{% endif %} d-flex align-items-center p-3 rounded">
+            <a href="{{ url_for('student_map') }}" class="nav-link {% if (active_nav_override is none and request.endpoint == 'student_map') or active_nav_override == 'student_map' %}active{% endif %} d-flex align-items-center p-3 rounded">
                 <i class="bi bi-map-fill nav-icon me-3"></i>
                 MAP
             </a>
         </li>
         <li class="nav-item mb-2">
-            <a href="{{ url_for('student_pending_verifications') }}" class="nav-link {% if request.endpoint in ['student_pending_verifications', 'student_edit_rock'] %}active{% endif %} d-flex align-items-center p-3 rounded">
+            <a href="{{ url_for('student_pending_verifications') }}" class="nav-link {% if (active_nav_override is none and request.endpoint in ['student_pending_verifications', 'student_edit_rock']) or active_nav_override == 'student_pending_verifications' %}active{% endif %} d-flex align-items-center p-3 rounded">
                 <i class="bi bi-chat-dots-fill nav-icon me-3"></i>
                 PENDING VERIFICATIONS
             </a>
         </li>
         <li class="nav-item mb-2">
-            <a href="{{ url_for('student_logs') }}" class="nav-link {% if request.endpoint == 'student_logs' %}active{% endif %} d-flex align-items-center p-3 rounded">
+            <a href="{{ url_for('student_logs') }}" class="nav-link {% if (active_nav_override is none and request.endpoint == 'student_logs') or active_nav_override == 'student_logs' %}active{% endif %} d-flex align-items-center p-3 rounded">
                 <i class="bi bi-list-ul nav-icon me-3"></i>
                 ACTIVITY LOGS
             </a>
         </li>
         <li class="nav-item mb-2">
-            <a href="{{ url_for('student_archives') }}" class="nav-link {% if request.endpoint == 'student_archives' %}active{% endif %} d-flex align-items-center p-3 rounded">
+            <a href="{{ url_for('student_archives') }}" class="nav-link {% if (active_nav_override is none and request.endpoint == 'student_archives') or active_nav_override == 'student_archives' %}active{% endif %} d-flex align-items-center p-3 rounded">
                 <i class="bi bi-archive-fill nav-icon me-3"></i>
                 ARCHIVES
             </a>
         </li>
         <li class="nav-item mb-2">
-            <a href="{{ url_for('student_settings') }}" class="nav-link {% if request.endpoint == 'student_settings' %}active{% endif %} d-flex align-items-center p-3 rounded">
+            <a href="{{ url_for('student_settings') }}" class="nav-link {% if (active_nav_override is none and request.endpoint == 'student_settings') or active_nav_override == 'student_settings' %}active{% endif %} d-flex align-items-center p-3 rounded">
                 <i class="bi bi-gear-fill nav-icon me-3"></i>
                 SETTINGS
             </a>
@@ -64,56 +65,56 @@
 
 <!-- Bootstrap Offcanvas Sidebar for Mobile -->
 <div class="offcanvas offcanvas-start d-md-none" tabindex="-1" id="sidebarOffcanvas" aria-labelledby="sidebarOffcanvasLabel">
-    <div class="offcanvas-header" style="background: #8B0000; color: white;">
+    <div class="offcanvas-header" style="background: var(--sidebar-bg); color: var(--header-text);">
         <h5 class="offcanvas-title fst-italic fw-bold" id="sidebarOffcanvasLabel">ROCK SAMPLE INDEX</h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
-    <div class="offcanvas-body p-0" style="background: #8B0000; color: white;">
+    <div class="offcanvas-body p-0" style="background: var(--sidebar-bg); color: var(--header-text);">
         <ul class="nav-menu list-unstyled m-0 p-2">
             <li class="nav-item mb-2">
-                <a href="{{ url_for('student_dashboard') }}" class="nav-link {% if request.endpoint == 'student_dashboard' %}active{% endif %} d-flex align-items-center p-3 rounded">
+                <a href="{{ url_for('student_dashboard') }}" class="nav-link {% if (active_nav_override is none and request.endpoint == 'student_dashboard') or active_nav_override == 'student_dashboard' %}active{% endif %} d-flex align-items-center p-3 rounded">
                     <i class="bi bi-grid-3x3-gap-fill nav-icon me-3"></i>
                     DASHBOARD
                 </a>
             </li>
             <li class="nav-item mb-2">
-                <a href="{{ url_for('student_add_rock') }}" class="nav-link {% if request.endpoint == 'student_add_rock' %}active{% endif %} d-flex align-items-center p-3 rounded">
+                <a href="{{ url_for('student_add_rock') }}" class="nav-link {% if (active_nav_override is none and request.endpoint == 'student_add_rock') or active_nav_override == 'student_add_rock' %}active{% endif %} d-flex align-items-center p-3 rounded">
                     <i class="bi bi-plus-circle-fill nav-icon me-3"></i>
-                    ADD ROCK
+                    ADD SAMPLE
                 </a>
             </li>
             <li class="nav-item mb-2">
-                <a href="{{ url_for('student_view_rocks') }}" class="nav-link {% if request.endpoint in ['student_view_rocks', 'student_rock_detail'] %}active{% endif %} d-flex align-items-center p-3 rounded">
+                <a href="{{ url_for('student_view_rocks') }}" class="nav-link {% if (active_nav_override is none and request.endpoint in ['student_view_rocks', 'student_rock_detail']) or active_nav_override == 'student_view_rocks' %}active{% endif %} d-flex align-items-center p-3 rounded">
                     <i class="bi bi-eye-fill nav-icon me-3"></i>
-                    VIEW ROCKS
+                    VIEW SAMPLES
                 </a>
             </li>
             <li class="nav-item mb-2">
-                <a href="{{ url_for('student_pending_verifications') }}" class="nav-link {% if request.endpoint in ['student_pending_verifications', 'student_edit_rock'] %}active{% endif %} d-flex align-items-center p-3 rounded">
+                <a href="{{ url_for('student_pending_verifications') }}" class="nav-link {% if (active_nav_override is none and request.endpoint in ['student_pending_verifications', 'student_edit_rock']) or active_nav_override == 'student_pending_verifications' %}active{% endif %} d-flex align-items-center p-3 rounded">
                     <i class="bi bi-chat-dots-fill nav-icon me-3"></i>
                     PENDING VERIFICATIONS
                 </a>
             </li>
             <li class="nav-item mb-2">
-                <a href="{{ url_for('student_archives') }}" class="nav-link {% if request.endpoint == 'student_archives' %}active{% endif %} d-flex align-items-center p-3 rounded">
+                <a href="{{ url_for('student_archives') }}" class="nav-link {% if (active_nav_override is none and request.endpoint == 'student_archives') or active_nav_override == 'student_archives' %}active{% endif %} d-flex align-items-center p-3 rounded">
                     <i class="bi bi-archive-fill nav-icon me-3"></i>
                     ARCHIVES
                 </a>
             </li>
             <li class="nav-item mb-2">
-                <a href="{{ url_for('student_map') }}" class="nav-link {% if request.endpoint == 'student_map' %}active{% endif %} d-flex align-items-center p-3 rounded">
+                <a href="{{ url_for('student_map') }}" class="nav-link {% if (active_nav_override is none and request.endpoint == 'student_map') or active_nav_override == 'student_map' %}active{% endif %} d-flex align-items-center p-3 rounded">
                     <i class="bi bi-map-fill nav-icon me-3"></i>
                     MAP
                 </a>
             </li>
             <li class="nav-item mb-2">
-                <a href="{{ url_for('student_logs') }}" class="nav-link {% if request.endpoint == 'student_logs' %}active{% endif %} d-flex align-items-center p-3 rounded">
+                <a href="{{ url_for('student_logs') }}" class="nav-link {% if (active_nav_override is none and request.endpoint == 'student_logs') or active_nav_override == 'student_logs' %}active{% endif %} d-flex align-items-center p-3 rounded">
                     <i class="bi bi-list-ul nav-icon me-3"></i>
                     ACTIVITY LOGS
                 </a>
             </li>
             <li class="nav-item mb-2">
-                <a href="{{ url_for('student_settings') }}" class="nav-link {% if request.endpoint == 'student_settings' %}active{% endif %} d-flex align-items-center p-3 rounded">
+                <a href="{{ url_for('student_settings') }}" class="nav-link {% if (active_nav_override is none and request.endpoint == 'student_settings') or active_nav_override == 'student_settings' %}active{% endif %} d-flex align-items-center p-3 rounded">
                     <i class="bi bi-gear-fill nav-icon me-3"></i>
                     SETTINGS
                 </a>
@@ -127,6 +128,56 @@
         </ul>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_css %}
+{{ super() }}
+<style>
+/* Tables: Dark mode black background with white text */
+[data-theme="dark"] .table {
+    background-color: #000000;
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.25);
+    transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}
+
+[data-theme="dark"] .table > :not(caption) > * > * {
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.25);
+    box-shadow: none;
+}
+
+[data-theme="dark"] .table thead,
+[data-theme="dark"] .table thead th {
+    background-color: #000000;
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+[data-theme="dark"] .table tbody tr {
+    background-color: #000000;
+}
+
+[data-theme="dark"] .table-striped > tbody > tr:nth-of-type(odd) > * {
+    background-color: #0d0d0d;
+    color: #ffffff;
+}
+
+[data-theme="dark"] .table-hover > tbody > tr:hover > * {
+    background-color: #111111;
+    color: #ffffff;
+}
+
+[data-theme="dark"] .table caption {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+[data-theme="dark"] .table a,
+[data-theme="dark"] .table .btn,
+[data-theme="dark"] .table span {
+    color: #ffffff;
+}
+</style>
 {% endblock %}
 
 {% block extra_js %}

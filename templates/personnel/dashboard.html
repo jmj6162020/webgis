@@ -8,15 +8,15 @@
 .profile-picture {
     width: 40px;
     height: 40px;
-    background: white;
-    color: #8B0000;
+    background: var(--surface-bg);
+    color: var(--brand-primary);
     font-weight: bold;
-    border: 2px solid #8B0000;
+    border: 2px solid var(--brand-primary);
 }
 
 .welcome-banner {
-    background: #8B0000;
-    color: white;
+    background: var(--brand-primary);
+    color: var(--header-text);
     padding: 1rem;
     text-align: center;
     margin-bottom: 1rem;
@@ -36,8 +36,8 @@
 }
 
 .verify-btn {
-    background: #8B0000;
-    color: white;
+    background: var(--brand-primary);
+    color: var(--header-text);
     border: none;
     padding: 0.5rem 1.5rem;
     font-size: 0.9rem;
@@ -48,28 +48,29 @@
 }
 
 .verify-btn:hover {
-    background: #6d0000;
-    color: white;
+    background: var(--brand-primary-dark);
+    color: var(--header-text);
 }
 
 /* Stats Cards - Compact */
 .stat-card {
-    background: #8B0000;
-    box-shadow: 0 2px 8px rgba(139, 0, 0, 0.2);
+    background: var(--brand-primary);
+    box-shadow: 0 2px 8px var(--shadow-color);
     padding: 1rem;
 }
 
 /* Chart Section */
 .chart-section {
-    background: white;
+    background: var(--surface-bg);
     border-radius: 8px;
     padding: 1rem;
     margin-bottom: 1rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px var(--shadow-color);
+    border: 1px solid var(--border-color);
 }
 
 .chart-section h3 {
-    color: #8B0000;
+    color: var(--brand-primary);
     font-weight: 600;
     margin-bottom: 0.75rem;
     font-size: 1rem;
@@ -96,7 +97,7 @@
 }
 
 .stat-icon i {
-    color: white;
+    color: var(--header-text);
     font-size: 1.2rem;
 }
 
@@ -113,15 +114,16 @@
 
 /* Recent Pending Submissions Table Styling - Compact */
 .pending-submissions-container {
-    background: white;
+    background: var(--surface-bg);
     border-radius: 6px;
     overflow: hidden;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 6px var(--shadow-color);
+    border: 1px solid var(--border-color);
 }
 
 .pending-submissions-header {
-    background: #8B0000;
-    color: white;
+    background: var(--brand-primary);
+    color: var(--header-text);
     padding: 0.75rem 1rem;
     font-size: 1.1rem;
     font-weight: 600;
@@ -134,8 +136,8 @@
 }
 
 .pending-table thead th {
-    background: #8B0000 !important;
-    color: white;
+    background: var(--surface-alt-bg) !important;
+    color: var(--text-primary);
     white-space: nowrap;
     text-align: center;
     padding: 0.75rem 0.5rem;
@@ -149,12 +151,30 @@
     text-align: center;
     vertical-align: middle;
     padding: 0.75rem 0.5rem;
-    border-bottom: 1px solid #dee2e6;
+    border-bottom: 1px solid var(--border-color);
     font-size: 0.85rem;
+    color: var(--text-primary);
 }
 
 .pending-table tbody tr:hover {
-    background-color: #f8f9fa;
+    background-color: var(--surface-alt-bg);
+}
+
+/* Dark mode: ensure full dark background for table cells and empty-state */
+body.theme-dark .pending-submissions-container {
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.45);
+}
+
+body.theme-dark .pending-table {
+    background-color: #000000;
+    color: #ffffff;
+}
+
+body.theme-dark .pending-table > :not(caption) > * > * {
+    background-color: #000000;
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: none;
 }
 
 /* Action Buttons */
@@ -194,8 +214,8 @@
 }
 
 .btn-primary-custom {
-    background: #8B0000;
-    color: white;
+    background: var(--brand-primary);
+    color: var(--header-text);
     border: none;
     padding: 0.5rem 1rem;
     border-radius: 6px;
@@ -207,8 +227,8 @@
 }
 
 .btn-primary-custom:hover {
-    background: #700000;
-    color: white;
+    background: var(--brand-primary-dark);
+    color: var(--header-text);
     text-decoration: none;
 }
 
@@ -313,11 +333,29 @@
 {% endblock %}
 
 {% block content %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="mb-3">
+        {% for category, message in messages %}
+            <div class="alert {% if category in ['success'] %}alert-success{% elif category in ['error','danger'] %}alert-danger{% else %}alert-info{% endif %} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+{% endwith %}
+
 <!-- Welcome Banner -->
 <div class="welcome-banner">
     <h1 class="mb-0">WELCOME FACULTY!</h1>
     <p class="mb-0">Review and verify student rock sample submissions</p>
 </div>
+
+<!-- Call to Action -->
+<div class="text-center py-4 fst-italic text-danger fs-5 fw-medium">
+    DUKDOK GEOL!⚒
+    </div>
 
 <!-- Stats Cards -->
 <div class="stats-cards row g-3 mb-3 justify-content-center">
@@ -452,7 +490,11 @@
 <script>
 // Initialize bar chart when page loads
 document.addEventListener('DOMContentLoaded', function() {
-    const ctx = document.getElementById('statusChart').getContext('2d');
+    const canvas = document.getElementById('statusChart');
+    const ctx = canvas.getContext('2d');
+    const isDark = (document.documentElement.dataset.theme || 'light') === 'dark';
+    const axisColor = isDark ? '#e2e8f0' : '#666';
+    const gridColor = isDark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.1)';
     
     // Get data from backend
     const totalRocks = {{ total_rocks or 0 }};
@@ -493,8 +535,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
                 tooltip: {
                     backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                    titleColor: 'white',
-                    bodyColor: 'white',
+                    titleColor: '#ffffff',
+                    bodyColor: '#ffffff',
                     borderColor: '#8B0000',
                     borderWidth: 1,
                     callbacks: {
@@ -509,19 +551,19 @@ document.addEventListener('DOMContentLoaded', function() {
                     beginAtZero: true,
                     ticks: {
                         stepSize: 1,
-                        color: '#666',
+                        color: axisColor,
                         font: {
                             size: 12
                         }
                     },
                     grid: {
-                        color: 'rgba(0, 0, 0, 0.1)',
+                        color: gridColor,
                         drawBorder: false
                     }
                 },
                 x: {
                     ticks: {
-                        color: '#666',
+                        color: axisColor,
                         font: {
                             size: 12,
                             weight: 'bold'

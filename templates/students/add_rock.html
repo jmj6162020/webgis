@@ -5,13 +5,36 @@
 {% block page_styles %}
 <style>
 /* Add Rock Page Specific Styles - Compact */
-.page-header {
-    background: #8B0000;
-    color: white;
+body.theme-light .page-header {
+    background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-dark) 100%);
+    color: var(--header-text);
     padding: 1rem;
     border-radius: 6px;
     margin-bottom: 1rem;
-    box-shadow: 0 2px 8px rgba(139, 0, 0, 0.2);
+    box-shadow: 0 2px 8px var(--shadow-color);
+}
+
+body.theme-light .form-card {
+    background: var(--surface-bg);
+    border-radius: 6px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 6px var(--shadow-color);
+}
+
+body.theme-light .section-title,
+body.theme-light .form-card h2 {
+    color: var(--brand-primary);
+    border-bottom: 2px solid var(--brand-primary);
+}
+
+.page-header {
+    background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-dark) 100%);
+    color: var(--header-text);
+    padding: 1rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 8px var(--shadow-color);
 }
 
 .page-header h1 {
@@ -27,89 +50,46 @@
 }
 
 .form-card {
-    background: white;
+    background: var(--surface-bg);
     border-radius: 6px;
-    padding: 1rem;
+    padding: 1.25rem;
     margin-bottom: 1rem;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 6px var(--shadow-color);
+    border: 1px solid var(--border-color);
 }
 
 .form-label {
     font-weight: 600;
     font-size: 0.9rem;
     margin-bottom: 0.5rem;
+    color: var(--text-primary);
 }
 
-.form-control {
+.form-control,
+.form-select,
+.form-control-plaintext {
     font-size: 0.9rem;
     padding: 0.5rem 0.75rem;
-}
-
-.form-control:focus {
-    border-color: #8B0000;
-    box-shadow: 0 0 0 0.2rem rgba(139, 0, 0, 0.25);
-}
-
-.btn-submit {
-    background: #8B0000;
-    color: white;
-    border: none;
-    padding: 0.5rem 1.5rem;
-    border-radius: 6px;
-    font-weight: 600;
-    font-size: 0.9rem;
-}
-
-.btn-submit:hover {
-    background: #6d0000;
-    color: white;
-}
-
-.image-preview {
-    max-width: 200px;
-    max-height: 200px;
-    border-radius: 6px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-}
-
-.section-title {
-    color: #8B0000;
-    font-weight: 600;
-    font-size: 1.1rem;
-    margin-bottom: 1rem;
-    border-bottom: 2px solid #8B0000;
-    padding-bottom: 0.5rem;
-}
-
-.form-card h2 {
-    color: #8B0000;
-    font-size: 1.5rem;
-    font-weight: 600;
-    margin-bottom: 1.5rem;
-    padding-bottom: 0.75rem;
-    border-bottom: 2px solid #8B0000;
-}
-
-.form-label {
-    font-weight: 600;
-    color: #333;
-            margin-bottom: 0.5rem;
-        }
-        
-.form-control, .form-select {
     border-radius: 8px;
-    border: 1px solid #dee2e6;
-    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    background-color: var(--surface-bg);
+    color: var(--text-primary);
 }
 
-.form-control:focus, .form-select:focus {
-    border-color: #8B0000;
+.form-control::placeholder {
+    color: var(--text-muted);
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--brand-primary);
     box-shadow: 0 0 0 0.2rem rgba(139, 0, 0, 0.25);
+    background-color: var(--surface-bg);
 }
 
 .btn-submit {
-    background: #8B0000;
-    color: white;
+    background: var(--brand-primary);
+    color: var(--header-text);
     border: none;
     padding: 0.75rem 2rem;
             font-weight: 600;
@@ -118,24 +98,26 @@
         }
         
 .btn-submit:hover {
-    background: #a00000;
+    background: var(--brand-primary-dark);
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(139, 0, 0, 0.3);
+    color: var(--header-text);
 }
 
 .image-upload-area {
-    border: 2px dashed #dee2e6;
+    border: 2px dashed var(--border-color);
             border-radius: 8px;
             padding: 2rem;
             text-align: center;
-            background: #f8f9fa;
+    background: var(--surface-alt-bg);
     cursor: pointer;
             transition: all 0.3s ease;
+    color: var(--text-primary);
         }
         
 .image-upload-area:hover {
-            border-color: #8B0000;
-    background: #fff;
+    border-color: var(--brand-primary);
+    background: var(--surface-bg);
 }
 
 .image-preview {
@@ -143,6 +125,58 @@
     max-height: 200px;
     border-radius: 8px;
     margin-top: 1rem;
+    box-shadow: 0 2px 6px var(--shadow-color);
+}
+
+.section-title {
+    color: var(--brand-primary);
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    border-bottom: 2px solid var(--brand-primary);
+    padding-bottom: 0.5rem;
+}
+
+.form-card h2 {
+    color: var(--brand-primary);
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--brand-primary);
+}
+
+body.theme-dark .form-card {
+    background: var(--surface-bg);
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.45);
+}
+
+body.theme-dark .form-control,
+body.theme-dark .form-select {
+    background-color: rgba(17, 24, 39, 0.9);
+    border-color: rgba(148, 163, 184, 0.35);
+    color: #ffffff;
+}
+
+body.theme-dark .form-control::placeholder {
+    color: rgba(226, 232, 240, 0.6);
+}
+
+body.theme-dark .section-title,
+body.theme-dark .form-card h2 {
+    color: #fef2f2;
+    border-bottom-color: rgba(248, 113, 113, 0.6);
+}
+
+body.theme-dark .image-upload-area {
+    background: rgba(17, 24, 39, 0.85);
+    border-color: rgba(148, 163, 184, 0.3);
+    color: #e2e8f0;
+}
+
+body.theme-dark .image-upload-area:hover {
+    background: rgba(30, 41, 59, 0.95);
+    border-color: rgba(248, 113, 113, 0.6);
 }
 
 /* Responsive Design */
@@ -204,6 +238,19 @@
 {% endblock %}
 
 {% block content %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="mb-3">
+        {% for category, message in messages %}
+            <div class="alert {% if category in ['success'] %}alert-success{% elif category in ['error','danger'] %}alert-danger{% else %}alert-info{% endif %} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+{% endwith %}
+
 <!-- Page Header -->
 <div class="page-header">
     <h1><i class="bi bi-plus-circle-fill me-3"></i>Add New Rock Sample</h1>
@@ -259,20 +306,27 @@
         </div>
         <div class="row">
             <div class="col-md-6 mb-3">
-                <label for="latitude" class="form-label">Latitude</label>
-                <input type="number" step="any" class="form-control" id="latitude" name="latitude" 
-                       placeholder="Latitude">
+                <label for="barangay" class="form-label">Barangay</label>
+                <input type="text" class="form-control" id="barangay" name="barangay"
+                       placeholder="Barangay">
             </div>
             <div class="col-md-6 mb-3">
-                <label for="longitude" class="form-label">Longitude</label>
-                <input type="number" step="any" class="form-control" id="longitude" name="longitude" 
-                       placeholder="Longitude">
+                <label for="province" class="form-label">Province</label>
+                <input type="text" class="form-control" id="province" name="province"
+                       placeholder="Province">
             </div>
         </div>
-        <div class="mb-3">
-            <label for="outcrop_id" class="form-label">Outcrop ID</label>
-            <input type="text" class="form-control" id="outcrop_id" name="outcrop_id" 
-                   placeholder="Outcrop ID">
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="latitude" class="form-label">Latitude *</label>
+                <input type="number" step="any" class="form-control" id="latitude" name="latitude" 
+                       placeholder="Latitude" required>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="longitude" class="form-label">Longitude *</label>
+                <input type="number" step="any" class="form-control" id="longitude" name="longitude" 
+                       placeholder="Longitude" required>
+            </div>
         </div>
     </div>
                                 

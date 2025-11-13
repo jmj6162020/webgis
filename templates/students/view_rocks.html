@@ -6,12 +6,12 @@
 <style>
 /* View Rocks Page Specific Styles - Compact */
 .page-header {
-    background: #8B0000;
-    color: white;
+    background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-dark) 100%);
+    color: var(--header-text);
     padding: 1rem;
     border-radius: 6px;
     margin-bottom: 1rem;
-    box-shadow: 0 2px 8px rgba(139, 0, 0, 0.2);
+    box-shadow: 0 2px 8px var(--shadow-color);
 }
 
 .page-header h1 {
@@ -27,11 +27,12 @@
 }
 
 .filter-card {
-    background: white;
+    background: var(--surface-bg);
     border-radius: 6px;
     padding: 1rem;
     margin-bottom: 1rem;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 6px var(--shadow-color);
+    border: 1px solid var(--border-color);
 }
 
 .stats-cards {
@@ -39,10 +40,10 @@
 }
 
 .stat-card {
-    background: white;
+    background: var(--surface-bg);
     border-radius: 6px;
     padding: 0.75rem;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 6px var(--shadow-color);
     border-left: 4px solid;
 }
 
@@ -70,20 +71,21 @@
 
 .stat-label {
     font-size: 0.85rem;
-    color: #6c757d;
+    color: var(--text-muted);
     margin-bottom: 0;
 }
 
 .rocks-table {
-    background: white;
+    background: var(--surface-bg);
     border-radius: 6px;
     overflow: hidden;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 6px var(--shadow-color);
+    border: 1px solid var(--border-color);
 }
 
 .table-header {
-    background: #8B0000;
-    color: white;
+    background: var(--brand-primary);
+    color: var(--header-text);
     padding: 0.75rem 1rem;
     font-size: 1rem;
     font-weight: 600;
@@ -93,26 +95,79 @@
 .table {
     margin-bottom: 0;
     font-size: 0.9rem;
+    border-color: var(--border-color);
 }
 
 .table th {
-    background: #f8f9fa;
-    color: #495057;
+    background: var(--surface-alt-bg);
+    color: var(--text-primary);
     font-weight: 600;
     padding: 0.75rem 0.5rem;
-    border-bottom: 2px solid #dee2e6;
+    border-bottom: 2px solid var(--border-color);
     font-size: 0.85rem;
 }
 
 .table td {
     padding: 0.75rem 0.5rem;
     vertical-align: middle;
-    border-bottom: 1px solid #dee2e6;
+    border-bottom: 1px solid var(--border-color);
     font-size: 0.85rem;
+    color: var(--text-primary);
 }
 
 .table tbody tr:hover {
-    background-color: #f8f9fa;
+    background-color: var(--surface-alt-bg);
+}
+
+[data-theme="dark"] .rocks-table {
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.45);
+}
+
+[data-theme="dark"] .filter-card,
+[data-theme="dark"] .stat-card {
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.45);
+}
+
+[data-theme="dark"] .form-control,
+[data-theme="dark"] .form-select {
+    background-color: rgba(17, 24, 39, 0.9);
+    border-color: rgba(148, 163, 184, 0.35);
+    color: #ffffff;
+}
+
+[data-theme="dark"] .form-control::placeholder {
+    color: rgba(226, 232, 240, 0.6);
+}
+
+[data-theme="dark"] .table th {
+    background: #000000;
+    color: #ffffff;
+}
+
+[data-theme="dark"] .table td {
+    color: #ffffff;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="dark"] .table tbody tr:hover {
+    background-color: #111111;
+}
+
+.rocks-table .table {
+    border-color: var(--border-color);
+}
+
+/* Force full dark background for all table cells and rows (including empty-state) */
+body.theme-dark .rocks-table .table {
+    background-color: #000000;
+    color: #ffffff;
+}
+
+body.theme-dark .rocks-table .table > :not(caption) > * > * {
+    background-color: #000000;
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: none;
 }
 
 .status-badge {
@@ -199,6 +254,19 @@
 {% endblock %}
 
 {% block content %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="mb-3">
+        {% for category, message in messages %}
+            <div class="alert {% if category in ['success'] %}alert-success{% elif category in ['error','danger'] %}alert-danger{% else %}alert-info{% endif %} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+{% endwith %}
+
 <!-- Page Header -->
 <div class="page-header">
     <div class="d-flex justify-content-between align-items-center">
@@ -206,20 +274,20 @@
             <h1><i class="bi bi-collection-fill me-3"></i>Verified Rock Samples</h1>
             <p class="mb-0">Browse all verified rock samples from students</p>
         </div>
-        <a href="{{ url_for('student_add_rock') }}" class="btn btn-light btn-sm">
-            <i class="bi bi-plus-circle-fill me-1"></i>Add New Rock
+        <a href="{{ url_for('student_add_rock') }}" class="btn btn-primary btn-sm" style="background: var(--brand-primary); border: none;">
+            <i class="bi bi-plus-circle-fill me-1"></i>Add New Sample
         </a>
     </div>
 </div>
 
 <!-- Search and Filter Section -->
 <div class="filter-card">
-    <h5 class="mb-3" style="color: #8B0000;"><i class="bi bi-funnel-fill me-2"></i>Search & Filter</h5>
+    <h5 class="mb-3" style="color: var(--brand-primary);"><i class="bi bi-funnel-fill me-2"></i>Search & Filter</h5>
     <form method="GET" action="{{ url_for('student_view_rocks') }}" class="row g-3">
         <div class="col-md-4">
             <label for="search" class="form-label">Search</label>
             <input type="text" class="form-control" id="search" name="search" 
-                   placeholder="Search by Rock ID, Type..." 
+                   placeholder="Search by Sample Index, Rock ID, Type..." 
                    value="{{ search_query or '' }}">
         </div>
         <div class="col-md-3">
@@ -245,12 +313,29 @@
                    value="{{ date_to or '' }}">
         </div>
         <div class="col-12">
-            <button type="submit" class="btn btn-primary btn-sm" style="background: #8B0000; border: none;">
+            <button type="submit" class="btn btn-primary btn-sm" style="background: var(--brand-primary); border: none;">
                 <i class="bi bi-search me-1"></i>Search & Filter
             </button>
             <a href="{{ url_for('student_view_rocks') }}" class="btn btn-secondary btn-sm ms-2">
                 <i class="bi bi-x-circle me-1"></i>Clear Filters
             </a>
+            <div class="btn-group ms-2" role="group">
+                <button type="button" class="btn btn-success btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-download me-1"></i>Export
+                </button>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a class="dropdown-item" href="#" onclick="exportData('csv'); return false;">
+                            <i class="bi bi-file-earmark-spreadsheet me-2"></i>Export as CSV
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="#" onclick="exportData('excel'); return false;">
+                            <i class="bi bi-file-earmark-excel me-2"></i>Export as Excel
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </div>
     </form>
 </div>
@@ -260,14 +345,80 @@
     <div class="col-md-12">
         <div class="stat-card verified">
             <div class="stat-number text-success">{{ rocks|length }}</div>
-            <div class="stat-label">Verified Rocks</div>
+            <div class="stat-label">Verified Samples</div>
         </div>
+    </div>
+</div>
+
+<!-- My Verified Samples -->
+<div class="rocks-table mb-3">
+    <h5 class="table-header d-flex justify-content-between align-items-center">
+        <span><i class="bi bi-person-check me-2"></i>My Verified Samples</span>
+        <small class="text-light opacity-75">{{ my_verified|length }} sample{{ my_verified|length == 1 and '' or 's' }}</small>
+    </h5>
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Sample Index</th>
+                    <th>Rock ID</th>
+                    <th>Type</th>
+                    <th>Location</th>
+                    <th>Verified On</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if my_verified %}
+                    {% for rock in my_verified %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td><strong>{{ rock.rock_index or 'N/A' }}</strong></td>
+                        <td>{{ rock.rock_id or 'N/A' }}</td>
+                        <td>{{ rock.rock_type or 'N/A' }}</td>
+                        <td>
+                            <i class="bi bi-geo-alt-fill location-pin"></i>
+                            {{ rock.location_name or 'Unknown' }}
+                        </td>
+                        <td>{{ rock.updated_at.strftime('%b %d, %Y') if rock.updated_at else (rock.created_at.strftime('%b %d, %Y') if rock.created_at else 'N/A') }}</td>
+                        <td>
+                            <div class="d-flex gap-2">
+                                <a href="{{ url_for('student_rock_detail', rock_id=rock.sample_id) }}" class="btn btn-outline-primary btn-sm" title="View Details">
+                                    <i class="bi bi-eye-fill"></i>
+                                </a>
+                                <a href="{{ url_for('student_edit_rock', sample_id=rock.sample_id) }}" class="btn btn-outline-warning btn-sm" title="Edit Sample">
+                                    <i class="bi bi-pencil-fill"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="7">
+                            <div class="no-data">
+                                <i class="bi bi-clipboard-check"></i>
+                                <h5 class="text-muted mt-2">No Verified Samples Yet</h5>
+                                <p class="text-muted">Once your samples are verified, they will appear here for quick edits.</p>
+                                <a href="{{ url_for('student_add_rock') }}" class="btn btn-primary btn-sm" style="background: var(--brand-primary); border: none;">
+                                    <i class="bi bi-plus-circle-fill me-1"></i>Add Sample
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
     </div>
 </div>
 
 <!-- Rocks Table -->
 <div class="rocks-table">
-    <h5 class="table-header"><i class="bi bi-list-ul me-2"></i>Rock Sample List</h5>
+    <h5 class="table-header d-flex justify-content-between align-items-center">
+        <span><i class="bi bi-list-ul me-2"></i>All Rock Sample List</span>
+        <small class="text-light opacity-75">{{ rocks|length }} sample{{ rocks|length == 1 and '' or 's' }}</small>
+    </h5>
     <div class="table-responsive">
         <table class="table table-hover mb-0">
             <thead>
@@ -295,7 +446,7 @@
                             <i class="bi bi-geo-alt-fill location-pin"></i>
                             {{ rock.location_name }}
                         </td>
-                        <td>{{ rock.created_at.strftime('%b %d, %Y') if rock.created_at else 'N/A' }}</td>
+                        <td>{{ rock.submitted_by_name or 'Unknown' }}</td>
                         <td>
                             <span class="badge status-badge 
                                 {% if rock.status == 'verified' %}bg-success text-white
@@ -317,11 +468,17 @@
                         <td colspan="8">
                             <div class="no-data">
                                 <i class="bi bi-inbox"></i>
-                                <h5 class="text-muted mt-2">No Rock Samples Yet</h5>
-                                <p class="text-muted">Start by adding your first rock sample</p>
-                                <a href="{{ url_for('student_add_rock') }}" class="btn btn-primary btn-sm" style="background: #8B0000; border: none;">
-                                    <i class="bi bi-plus-circle-fill me-1"></i>Add Your First Rock
+                                <h5 class="text-muted mt-2">No Rock Samples Found</h5>
+                                <p class="text-muted">{% if rock_type_filter or search_query or date_from or date_to %}Try adjusting your filters{% else %}Start by adding your first sample{% endif %}</p>
+                                {% if not rock_type_filter and not search_query and not date_from and not date_to %}
+                                <a href="{{ url_for('student_add_rock') }}" class="btn btn-primary btn-sm" style="background: var(--brand-primary); border: none;">
+                                    <i class="bi bi-plus-circle-fill me-1"></i>Add Your First Sample
                                 </a>
+                                {% else %}
+                                <a href="{{ url_for('student_view_rocks') }}" class="btn btn-secondary btn-sm">
+                                    <i class="bi bi-x-circle me-1"></i>Clear Filters
+                                </a>
+                                {% endif %}
                             </div>
                         </td>
                     </tr>
@@ -330,4 +487,31 @@
         </table>
     </div>
 </div>
+
+<script>
+function exportData(format) {
+    // Get current filter values from the form
+    const search = document.getElementById('search').value || '';
+    const rockType = document.getElementById('rock_type').value || '';
+    const dateFrom = document.getElementById('date_from').value || '';
+    const dateTo = document.getElementById('date_to').value || '';
+    
+    // Build query string
+    const params = new URLSearchParams();
+    if (search) params.append('search', search);
+    if (rockType) params.append('rock_type', rockType);
+    if (dateFrom) params.append('date_from', dateFrom);
+    if (dateTo) params.append('date_to', dateTo);
+    
+    // Build export URL
+    const baseUrl = format === 'csv' 
+        ? '{{ url_for("student_export_rocks_csv") }}'
+        : '{{ url_for("student_export_rocks_excel") }}';
+    
+    const url = params.toString() ? `${baseUrl}?${params.toString()}` : baseUrl;
+    
+    // Trigger download
+    window.location.href = url;
+}
+</script>
 {% endblock %}

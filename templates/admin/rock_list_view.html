@@ -6,19 +6,20 @@
 <style>
 /* Rock List View Page Specific Styles */
 .search-filters {
-    background: white;
+    background: var(--surface-bg);
     border-radius: 8px;
     padding: 1.5rem;
     margin-bottom: 2rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px var(--shadow-color);
+    border: 1px solid var(--border-color);
 }
 
 /* Status Tabs */
 .status-tabs {
-    background: white;
+    background: var(--surface-bg);
     border-radius: 8px;
     margin-bottom: 2rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px var(--shadow-color);
     overflow: hidden;
 }
 
@@ -33,8 +34,8 @@
     border-radius: 8px 8px 0 0;
     padding: 1rem 2rem;
     font-weight: 600;
-    color: #666;
-    background: #f8f9fa;
+    color: var(--text-muted);
+    background: var(--surface-alt-bg);
     transition: all 0.3s ease;
     margin-right: 0.5rem;
     margin-bottom: 0;
@@ -42,14 +43,14 @@
 
 .nav-tabs .nav-link:hover {
     border-color: transparent;
-    background: #e9ecef;
-    color: #8B0000;
+    background: var(--surface-bg);
+    color: var(--brand-primary);
 }
 
 .nav-tabs .nav-link.active {
-    background: #8B0000;
-    color: white;
-    border-color: #8B0000;
+    background: var(--brand-primary);
+    color: var(--header-text);
+    border-color: var(--brand-primary);
 }
 
 .tab-content {
@@ -62,8 +63,8 @@
 
 /* Status Section Headers */
 .status-section-header {
-    background: linear-gradient(135deg, #8B0000 0%, #a00000 100%);
-    color: white;
+    background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-dark) 100%);
+    color: var(--header-text);
     padding: 0.75rem 1.5rem;
     margin: 0;
     font-size: 1rem;
@@ -71,6 +72,14 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+}
+
+.status-section-header .btn-group {
+    margin-left: auto;
+}
+
+.status-section-header .dropdown-menu {
+    min-width: 180px;
 }
 
 .status-section-header.verified {
@@ -178,7 +187,7 @@
 }
 
 .table-container tbody tr:hover {
-    background-color: #f8f9fa;
+    background-color: var(--surface-alt-bg);
 }
 
 /* Better spacing for empty states */
@@ -187,6 +196,19 @@
 }
 
 /* Improved mobile spacing */
+
+/* Dark mode: full black table cells for readability */
+body.theme-dark .table-container table {
+    background-color: #000000;
+    color: #ffffff;
+}
+body.theme-dark .table-container table > :not(caption) > * > * {
+    background-color: #000000;
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: none;
+}
+
 @media (max-width: 768px) {
     .nav-tabs .nav-link {
         padding: 0.75rem 1rem;
@@ -232,6 +254,19 @@
 {% endblock %}
 
 {% block content %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="mb-3">
+        {% for category, message in messages %}
+            <div class="alert {% if category in ['success'] %}alert-success{% elif category in ['error','danger'] %}alert-danger{% else %}alert-info{% endif %} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+{% endwith %}
+
 <!-- Page Header -->
 <div class="page-header">
     <h1><i class="bi bi-list-ul me-2"></i>Rock List View</h1>
@@ -256,16 +291,40 @@
                 <option value="Metamorphic Rock" {% if rock_type_filter == 'Metamorphic Rock' %}selected{% endif %}>Metamorphic Rock</option>
             </select>
         </div>
-        <div class="col-md-2 d-flex align-items-end">
-            <button type="submit" class="btn w-100 me-2" style="background: #8B0000; color: white;">
-                <i class="bi bi-search me-2"></i>Search
+        <div class="col-12">
+            <button type="submit" class="btn btn-sm me-2" style="background: #8B0000; color: white; border: none;">
+                <i class="bi bi-search me-1"></i>Search & Filter
             </button>
-            <a href="{{ url_for('admin_rock_list') }}" class="btn w-100" style="background: #6c757d; color: white;">
-                <i class="bi bi-x-circle me-2"></i>Clear
+            <a href="{{ url_for('admin_rock_list') }}" class="btn btn-secondary btn-sm">
+                <i class="bi bi-x-circle me-1"></i>Clear Filters
             </a>
         </div>
     </form>
 </div>
+
+<script>
+function exportData(format, status) {
+    // Get current filter values from the form
+    const search = document.getElementById('search').value || '';
+    const rockType = document.getElementById('rock_type').value || '';
+    
+    // Build query string
+    const params = new URLSearchParams();
+    if (search) params.append('search', search);
+    if (rockType) params.append('rock_type', rockType);
+    if (status) params.append('status', status);
+    
+    // Build export URL
+    const baseUrl = format === 'csv' 
+        ? '{{ url_for("admin_export_rocks_csv") }}'
+        : '{{ url_for("admin_export_rocks_excel") }}';
+    
+    const url = params.toString() ? `${baseUrl}?${params.toString()}` : baseUrl;
+    
+    // Trigger download
+    window.location.href = url;
+}
+</script>
 
 <!-- Status Tabs -->
 <div class="status-tabs">
@@ -299,9 +358,28 @@
     <div class="tab-content" id="statusTabsContent">
         <!-- All Samples Tab -->
         <div class="tab-pane fade show active" id="all" role="tabpanel">
-            <div class="status-section-header">
+            <div class="status-section-header" style="display: flex; justify-content: space-between; align-items: center;">
                 <span><i class="bi bi-list-ul me-2"></i>All Rock Samples</span>
-                <span class="status-count">{{ rocks|length if rocks else 0 }} Total</span>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <span class="status-count">{{ rocks|length if rocks else 0 }} Total</span>
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-success btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" style="background: #198754; border: none;">
+                            <i class="bi bi-download me-1"></i>Export
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item" href="#" onclick="exportData('csv', ''); return false;">
+                                    <i class="bi bi-file-earmark-spreadsheet me-2"></i>Export as CSV
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#" onclick="exportData('excel', ''); return false;">
+                                    <i class="bi bi-file-earmark-excel me-2"></i>Export as Excel
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
             <div class="table-container">
     <div class="table-responsive">
@@ -366,9 +444,28 @@
 
         <!-- Verified Samples Tab -->
         <div class="tab-pane fade" id="verified" role="tabpanel">
-            <div class="status-section-header verified">
+            <div class="status-section-header verified" style="display: flex; justify-content: space-between; align-items: center;">
                 <span><i class="bi bi-check-circle-fill me-2"></i>Verified Rock Samples</span>
-                <span class="status-count">{{ rocks|selectattr('status', 'equalto', 'verified')|list|length if rocks else 0 }} Verified</span>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <span class="status-count">{{ rocks|selectattr('status', 'equalto', 'verified')|list|length if rocks else 0 }} Verified</span>
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-success btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" style="background: #198754; border: none;">
+                            <i class="bi bi-download me-1"></i>Export
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item" href="#" onclick="exportData('csv', 'verified'); return false;">
+                                    <i class="bi bi-file-earmark-spreadsheet me-2"></i>Export as CSV
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#" onclick="exportData('excel', 'verified'); return false;">
+                                    <i class="bi bi-file-earmark-excel me-2"></i>Export as Excel
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
             <div class="table-container">
                 <div class="table-responsive">
@@ -425,9 +522,28 @@
 
         <!-- Pending Samples Tab -->
         <div class="tab-pane fade" id="pending" role="tabpanel">
-            <div class="status-section-header pending">
+            <div class="status-section-header pending" style="display: flex; justify-content: space-between; align-items: center;">
                 <span><i class="bi bi-clock-fill me-2"></i>Pending Review Samples</span>
-                <span class="status-count pending">{{ rocks|selectattr('status', 'equalto', 'pending')|list|length if rocks else 0 }} Pending</span>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <span class="status-count pending">{{ rocks|selectattr('status', 'equalto', 'pending')|list|length if rocks else 0 }} Pending</span>
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-success btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" style="background: #ffc107; border: none; color: #000;">
+                            <i class="bi bi-download me-1"></i>Export
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item" href="#" onclick="exportData('csv', 'pending'); return false;">
+                                    <i class="bi bi-file-earmark-spreadsheet me-2"></i>Export as CSV
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#" onclick="exportData('excel', 'pending'); return false;">
+                                    <i class="bi bi-file-earmark-excel me-2"></i>Export as Excel
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
             <div class="table-container">
                 <div class="table-responsive">
@@ -484,9 +600,28 @@
 
         <!-- Rejected Samples Tab -->
         <div class="tab-pane fade" id="rejected" role="tabpanel">
-            <div class="status-section-header rejected">
+            <div class="status-section-header rejected" style="display: flex; justify-content: space-between; align-items: center;">
                 <span><i class="bi bi-x-circle-fill me-2"></i>Rejected Rock Samples</span>
-                <span class="status-count">{{ rocks|selectattr('status', 'equalto', 'rejected')|list|length if rocks else 0 }} Rejected</span>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <span class="status-count">{{ rocks|selectattr('status', 'equalto', 'rejected')|list|length if rocks else 0 }} Rejected</span>
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-success btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" style="background: #dc3545; border: none;">
+                            <i class="bi bi-download me-1"></i>Export
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item" href="#" onclick="exportData('csv', 'rejected'); return false;">
+                                    <i class="bi bi-file-earmark-spreadsheet me-2"></i>Export as CSV
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#" onclick="exportData('excel', 'rejected'); return false;">
+                                    <i class="bi bi-file-earmark-excel me-2"></i>Export as Excel
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
             <div class="table-container">
                 <div class="table-responsive">

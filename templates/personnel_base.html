@@ -12,9 +12,15 @@
             </a>
         </li>
         <li class="nav-item mb-2">
-            <a href="{{ url_for('personnel_rock_list') }}" class="nav-link {% if request.endpoint in ['personnel_rock_list', 'personnel_rock_detail'] %}active{% endif %} d-flex align-items-center p-3 rounded">
+            <a href="{{ url_for('personnel_rock_list') }}" class="nav-link {% if request.endpoint in ['personnel_rock_list', 'personnel_rock_detail', 'personnel_edit_rock'] %}active{% endif %} d-flex align-items-center p-3 rounded">
                 <i class="bi bi-list-ul nav-icon me-3"></i>
                 ROCK SAMPLES
+            </a>
+        </li>
+        <li class="nav-item mb-2">
+            <a href="{{ url_for('personnel_add_rock') }}" class="nav-link {% if request.endpoint == 'personnel_add_rock' %}active{% endif %} d-flex align-items-center p-3 rounded">
+                <i class="bi bi-plus-circle-fill nav-icon me-3"></i>
+                ADD ROCK
             </a>
         </li>
         <li class="nav-item mb-2">
@@ -58,11 +64,11 @@
 
 <!-- Bootstrap Offcanvas Sidebar for Mobile -->
 <div class="offcanvas offcanvas-start d-md-none" tabindex="-1" id="sidebarOffcanvas" aria-labelledby="sidebarOffcanvasLabel">
-    <div class="offcanvas-header" style="background: #8B0000; color: white;">
+    <div class="offcanvas-header" style="background: var(--sidebar-bg); color: var(--header-text);">
         <h5 class="offcanvas-title fst-italic fw-bold" id="sidebarOffcanvasLabel">ROCK SAMPLE INDEX</h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
-    <div class="offcanvas-body p-0" style="background: #8B0000; color: white;">
+    <div class="offcanvas-body p-0" style="background: var(--sidebar-bg); color: var(--header-text);">
         <ul class="nav-menu list-unstyled m-0 p-0">
             <li class="nav-item mb-2">
                 <a href="{{ url_for('personnel_dashboard') }}" class="nav-link {% if request.endpoint == 'personnel_dashboard' %}active{% endif %} d-flex align-items-center p-3 rounded">
@@ -71,9 +77,15 @@
                 </a>
             </li>
             <li class="nav-item mb-2">
-                <a href="{{ url_for('personnel_rock_list') }}" class="nav-link {% if request.endpoint in ['personnel_rock_list', 'personnel_rock_detail'] %}active{% endif %} d-flex align-items-center p-3 rounded">
+                <a href="{{ url_for('personnel_rock_list') }}" class="nav-link {% if request.endpoint in ['personnel_rock_list', 'personnel_rock_detail', 'personnel_edit_rock'] %}active{% endif %} d-flex align-items-center p-3 rounded">
                     <i class="bi bi-list-ul nav-icon me-3"></i>
                     ROCK SAMPLES
+                </a>
+            </li>
+            <li class="nav-item mb-2">
+                <a href="{{ url_for('personnel_add_rock') }}" class="nav-link {% if request.endpoint == 'personnel_add_rock' %}active{% endif %} d-flex align-items-center p-3 rounded">
+                    <i class="bi bi-plus-circle-fill nav-icon me-3"></i>
+                    ADD ROCK
                 </a>
             </li>
             <li class="nav-item mb-2">

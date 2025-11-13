@@ -6,12 +6,12 @@
 <style>
 /* Compact page header */
 .page-header {
-    background: #8B0000;
-    color: white;
+    background: var(--brand-primary);
+    color: var(--header-text);
     padding: 1rem;
     border-radius: 6px;
     margin-bottom: 1rem;
-    box-shadow: 0 2px 8px rgba(139, 0, 0, 0.2);
+    box-shadow: 0 2px 8px var(--shadow-color);
 }
 
 .page-header h1 {
@@ -28,11 +28,12 @@
 
 /* Compact search filters */
 .search-filters {
-    background: white;
+    background: var(--surface-bg);
     border-radius: 6px;
     padding: 1rem;
     margin-bottom: 1rem;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 6px var(--shadow-color);
+    border: 1px solid var(--border-color);
 }
 
 .form-label {
@@ -45,11 +46,14 @@
 .form-select {
     font-size: 0.9rem;
     padding: 0.5rem 0.75rem;
+    background: var(--surface-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
 }
 
 .btn-search {
-    background: #8B0000;
-    color: white;
+    background: var(--brand-primary);
+    color: var(--header-text);
     border: none;
     padding: 0.5rem 1rem;
     border-radius: 6px;
@@ -57,15 +61,16 @@
 }
 
 .btn-search:hover {
-    background: #700000;
-    color: white;
+    background: var(--brand-primary-dark);
+    color: var(--header-text);
 }
 
 /* Compact rocks list container */
 .rocks-list-container {
-    background: white;
+    background: var(--surface-bg);
     border-radius: 6px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 6px var(--shadow-color);
+    border: 1px solid var(--border-color);
     overflow: hidden;
 }
 
@@ -74,8 +79,8 @@
 }
 
 .rocks-table thead {
-    background: #8B0000;
-    color: white;
+    background: var(--surface-alt-bg);
+    color: var(--text-primary);
 }
 
 .rocks-table th {
@@ -88,6 +93,8 @@
     padding: 0.75rem 0.5rem;
     font-size: 0.85rem;
     text-align: center;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-color);
 }
 
 .status-badge {
@@ -110,6 +117,11 @@
     color: white;
 }
 
+.btn-edit {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+}
+
 .no-rocks {
     padding: 2rem 1rem;
     text-align: center;
@@ -117,12 +129,25 @@
 
 .no-rocks i {
     font-size: 2rem;
-    color: #6c757d;
+    color: var(--text-muted);
 }
 
 .no-rocks h5 {
-    color: #6c757d;
+    color: var(--text-primary);
     margin-top: 1rem;
+}
+
+/* Dark mode: table full black background, white text (including empty-state) */
+body.theme-dark .rocks-table {
+    background-color: #000000;
+    color: #ffffff;
+}
+
+body.theme-dark .rocks-table > :not(caption) > * > * {
+    background-color: #000000;
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: none;
 }
 
 /* Mobile responsive */
@@ -188,6 +213,19 @@
 {% endblock %}
 
 {% block content %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="mb-3">
+        {% for category, message in messages %}
+            <div class="alert {% if category in ['success'] %}alert-success{% elif category in ['error','danger'] %}alert-danger{% else %}alert-info{% endif %} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+{% endwith %}
+
 <!-- Page Header -->
 <div class="page-header">
     <h1><i class="bi bi-list-ul me-2"></i>Rock List View</h1>
@@ -200,24 +238,68 @@
         <div class="col-md-6">
             <label for="search" class="form-label">Search</label>
             <input type="text" class="form-control" id="search" name="search" 
+                   value="{{ search_query or '' }}"
                    placeholder="Search by rock ID, type, or location">
         </div>
         <div class="col-md-4">
             <label for="rock_type" class="form-label">Rock Type</label>
             <select class="form-select" id="rock_type" name="rock_type">
                 <option value="">All Types</option>
-                <option value="igneous">Igneous</option>
-                <option value="sedimentary">Sedimentary</option>
-                <option value="metamorphic">Metamorphic</option>
+                <option value="igneous" {% if rock_type_filter == 'igneous' %}selected{% endif %}>Igneous</option>
+                <option value="sedimentary" {% if rock_type_filter == 'sedimentary' %}selected{% endif %}>Sedimentary</option>
+                <option value="metamorphic" {% if rock_type_filter == 'metamorphic' %}selected{% endif %}>Metamorphic</option>
             </select>
         </div>
-        <div class="col-md-2 d-flex align-items-end">
-            <button type="submit" class="btn btn-search w-100">
-                <i class="bi bi-search me-1"></i>Search
+        <div class="col-12">
+            <button type="submit" class="btn btn-search btn-sm" style="background: var(--brand-primary); border: none;">
+                <i class="bi bi-search me-1"></i>Search & Filter
             </button>
+            <a href="{{ url_for('personnel_rock_list') }}" class="btn btn-secondary btn-sm ms-2">
+                <i class="bi bi-x-circle me-1"></i>Clear Filters
+            </a>
+            <div class="btn-group ms-2" role="group">
+                <button type="button" class="btn btn-success btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-download me-1"></i>Export
+                </button>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a class="dropdown-item" href="#" onclick="exportData('csv'); return false;">
+                            <i class="bi bi-file-earmark-spreadsheet me-2"></i>Export as CSV
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="#" onclick="exportData('excel'); return false;">
+                            <i class="bi bi-file-earmark-excel me-2"></i>Export as Excel
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </div>
     </form>
 </div>
+
+<script>
+function exportData(format) {
+    // Get current filter values from the form
+    const search = document.getElementById('search').value || '';
+    const rockType = document.getElementById('rock_type').value || '';
+    
+    // Build query string
+    const params = new URLSearchParams();
+    if (search) params.append('search', search);
+    if (rockType) params.append('rock_type', rockType);
+    
+    // Build export URL
+    const baseUrl = format === 'csv' 
+        ? '{{ url_for("personnel_export_rocks_csv") }}'
+        : '{{ url_for("personnel_export_rocks_excel") }}';
+    
+    const url = params.toString() ? `${baseUrl}?${params.toString()}` : baseUrl;
+    
+    // Trigger download
+    window.location.href = url;
+}
+</script>
 
 <!-- Rocks List Table -->
 <div class="rocks-list-container">
@@ -241,7 +323,7 @@
                         <td>{{ rock.rock_id }}</td>
                         <td>{{ rock.rock_type }}</td>
                         <td>{{ rock.location_name }}</td>
-                        <td>{{ rock.submitted_by.username if rock.submitted_by else 'Unknown' }}</td>
+                        <td>{{ rock.student_name or 'Unknown' }}</td>
                         <td>{{ rock.created_at.strftime('%Y-%m-%d') if rock.created_at else '' }}</td>
                         <td>
                             <span class="status-badge badge 
@@ -252,8 +334,11 @@
                             </span>
                         </td>
                         <td>
-                            <a href="{{ url_for('personnel_rock_detail', sample_id=rock.sample_id) }}" class="btn-view">
-                                <i class="bi bi-eye-fill me-1"></i>View
+                            <a href="{{ url_for('personnel_rock_detail', sample_id=rock.sample_id) }}" class="btn-view me-1" title="View">
+                                <i class="bi bi-eye-fill"></i>
+                            </a>
+                            <a href="{{ url_for('personnel_edit_rock', sample_id=rock.sample_id) }}" class="btn btn-warning btn-edit" title="Edit">
+                                <i class="bi bi-pencil-fill"></i>
                             </a>
                         </td>
                     </tr>
